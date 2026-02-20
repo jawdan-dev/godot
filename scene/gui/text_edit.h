@@ -694,6 +694,8 @@ private:
 	void _move_caret_document_end(bool p_select);
 	bool _clear_carets_and_selection();
 
+	PackedInt32Array _get_text_word_removal_breaks(int p_line);
+
 protected:
 	void _notification(int p_what);
 	static void _bind_methods();

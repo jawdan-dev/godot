@@ -3321,6 +3321,25 @@ bool TextEdit::_clear_carets_and_selection() {
 	return false;
 }
 
+PackedInt32Array TextEdit::_get_text_word_removal_breaks(int p_line) {
+	PackedInt32Array breaks;
+	Ref<TextParagraph> line_data = text.get_line_data(p_line);
+
+	// Break on individually for <text>, <spaces>, and <punctuation>.
+	breaks.append_array(TS->shaped_text_get_word_breaks(line_data->get_rid(), TextServer::GRAPHEME_IS_SPACE));
+	breaks.append_array(TS->shaped_text_get_word_breaks(line_data->get_rid(), TextServer::GRAPHEME_IS_PUNCTUATION));
+
+	// Sort & remove duplicate breaks.
+	breaks.sort();
+	for (int j = breaks.size() - 1; j > 0; j--) {
+		if (breaks[j - 1] == breaks[j]) {
+			breaks.remove_at(j);
+		}
+	}
+
+	return breaks;
+}
+
 void TextEdit::_update_placeholder() {
 	if (theme_cache.font.is_null() || theme_cache.font_size <= 0) {
 		return; // Not in tree?
