@@ -3248,14 +3248,19 @@ void TextEdit::_delete(bool p_word, bool p_all_to_right) {
 			int line = get_caret_line(caret_index);
 			int column = get_caret_column(caret_index);
 
-			PackedInt32Array words = TS->shaped_text_get_word_breaks(text.get_line_data(line)->get_rid());
-			if (words.is_empty() || column >= words[words.size() - 1]) {
-				// Delete to the end when there are no more words.
+			// Get a list with the indices of the word break bounds of the given text line.
+			const PackedInt32Array word_breaks = _get_text_word_removal_breaks(line);
+			if (word_breaks.is_empty() || column >= word_breaks[word_breaks.size() - 1]) {
+				// Remove all the way to the end of the line when there are no workable word breaks.
 				column = text[get_caret_line(i)].length();
 			} else {
-				for (int j = 1; j < words.size(); j = j + 2) {
-					if (words[j] > column) {
-						column = words[j];
+				// Otherwise search for the first word break that is larger than the index from we're currently removing from.
+				for (int j = 0; j < word_breaks.size(); j++) {
+					// Allow a single whitespace to be included in the removal.
+					const bool include_whitespace = word_breaks[j] == (column + 1) && is_whitespace(text[line][column]);
+
+					if (word_breaks[j] > column && !include_whitespace) {
+						column = word_breaks[j];
 						break;
 					}
 				}
