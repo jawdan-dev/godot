@@ -3174,24 +3174,23 @@ void TextEdit::_do_backspace(bool p_word, bool p_all_to_left) {
 
 		if (p_word) {
 			// Remove text to the start of the word left of the caret.
+			int line = get_caret_line(caret_index);
 			int from_column = get_caret_column(caret_index);
 			int column = get_caret_column(caret_index);
-			// Check for the case "<word><space><caret>" and ignore the space.
-			// No need to check for column being 0 since it is checked above.
-			if (is_whitespace(text[get_caret_line(caret_index)][get_caret_column(caret_index) - 1])) {
-				column -= 1;
-			}
 
-			// Get a list with the indices of the word bounds of the given text line.
-			const PackedInt32Array words = TS->shaped_text_get_word_breaks(text.get_line_data(get_caret_line(caret_index))->get_rid());
-			if (words.is_empty() || column <= words[0]) {
-				// Delete to the start when there are no more words.
+			// Get a list with the indices of the word break bounds of the given text line.
+			const PackedInt32Array word_breaks = _get_text_word_removal_breaks(line);
+			if (word_breaks.is_empty() || column <= word_breaks[0]) {
+				// Remove all the way to the start of the line when there are no workable word breaks.
 				column = 0;
 			} else {
-				// Otherwise search for the first word break that is smaller than the index from we're currently deleting.
-				for (int c = words.size() - 2; c >= 0; c = c - 2) {
-					if (words[c] < column) {
-						column = words[c];
+				// Otherwise search for the first word break that is smaller than the index from we're currently removing from.
+				for (int j = word_breaks.size() - 1; j >= 0; j--) {
+					// Allow a single whitespace to be included in the removal.
+					const bool include_whitespace = word_breaks[j] == (column - 1) && is_whitespace(text[line][column - 1]);
+
+					if (word_breaks[j] < column && !include_whitespace) {
+						column = word_breaks[j];
 						break;
 					}
 				}
