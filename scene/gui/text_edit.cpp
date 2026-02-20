@@ -3276,6 +3276,18 @@ void TextEdit::_delete(bool p_word, bool p_all_to_right) {
 			} else {
 				next_column = get_caret_column(caret_index) < curline_len ? TS->shaped_text_next_character_pos(text.get_line_data(get_caret_line(caret_index))->get_rid(), (get_caret_column(caret_index))) : 0;
 			}
+
+			if (p_word && is_whitespace(text[next_line][next_column])) {
+				// Remove whitespace until next word break.
+				// Due to earlier p_word case, the caret is expected to be on a newline.
+				const PackedInt32Array word_breaks = _get_text_word_removal_breaks(next_line);
+				for (int j = 0; j < word_breaks.size(); j++) {
+					if (word_breaks[j] > next_column) {
+						next_column = word_breaks[j];
+						break;
+					}
+				}
+			}
 		}
 
 		_remove_text(get_caret_line(caret_index), get_caret_column(caret_index), next_line, next_column);
