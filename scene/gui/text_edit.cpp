@@ -3187,7 +3187,7 @@ void TextEdit::_do_backspace(bool p_word, bool p_all_to_left) {
 				// Otherwise search for the first word break that is smaller than the index from we're currently removing from.
 				for (int j = word_breaks.size() - 1; j >= 0; j--) {
 					// Allow a single whitespace to be included in the removal.
-					const bool include_whitespace = word_breaks[j] == (column - 1) && is_whitespace(text[line][column - 1]);
+					const bool include_whitespace = j > 0 && word_breaks[j] == (column - 1) && is_whitespace(text[line][column - 1]);
 
 					if (word_breaks[j] < column && !include_whitespace) {
 						column = word_breaks[j];
