@@ -5149,8 +5149,9 @@ TEST_CASE("[SceneTree][TextEdit] text entry") {
 			CHECK_FALSE(text_edit->has_selection(2));
 			CHECK(text_edit->get_caret_line(2) == 2);
 			CHECK(text_edit->get_caret_column(2) == 0);
+			text_edit->remove_secondary_carets();
 
-			// Remove whitespace after new line.
+			// Remove whitespace after removing new line.
 			text_edit->set_text("test\nline1\n line2\n\tline3\n  \t\t  mixed");
 			text_edit->set_caret_line(0);
 			text_edit->set_caret_column(4);
