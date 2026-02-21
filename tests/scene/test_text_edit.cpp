@@ -4319,11 +4319,11 @@ TEST_CASE("[SceneTree][TextEdit] text entry") {
 
 			SEND_GUI_ACTION("ui_text_backspace_word");
 			CHECK(text_edit->get_viewport()->is_input_handled());
-			CHECK(text_edit->get_text() == "this is st \nthis ime t text.");
+			CHECK(text_edit->get_text() == "this is st text\nthis ime t text.");
 			CHECK(text_edit->get_caret_count() == 2);
 			CHECK_FALSE(text_edit->has_selection(0));
 			CHECK(text_edit->get_caret_line(0) == 0);
-			CHECK(text_edit->get_caret_column(0) == 11);
+			CHECK(text_edit->get_caret_column(0) == 15);
 			CHECK_FALSE(text_edit->has_selection(1));
 			CHECK(text_edit->get_caret_line(1) == 1);
 			CHECK(text_edit->get_caret_column(1) == 9);
@@ -4349,11 +4349,11 @@ TEST_CASE("[SceneTree][TextEdit] text entry") {
 			// Redo.
 			text_edit->redo();
 			MessageQueue::get_singleton()->flush();
-			CHECK(text_edit->get_text() == "this is st \nthis ime t text.");
+			CHECK(text_edit->get_text() == "this is st text\nthis ime t text.");
 			CHECK(text_edit->get_caret_count() == 2);
 			CHECK_FALSE(text_edit->has_selection(0));
 			CHECK(text_edit->get_caret_line(0) == 0);
-			CHECK(text_edit->get_caret_column(0) == 11);
+			CHECK(text_edit->get_caret_column(0) == 15);
 			CHECK_FALSE(text_edit->has_selection(1));
 			CHECK(text_edit->get_caret_line(1) == 1);
 			CHECK(text_edit->get_caret_column(1) == 9);
@@ -4402,6 +4402,73 @@ TEST_CASE("[SceneTree][TextEdit] text entry") {
 			CHECK(text_edit->get_text() == "");
 			CHECK(text_edit->get_caret_line(0) == 0);
 			CHECK(text_edit->get_caret_column(0) == 0);
+
+			// Include word in removal if single whitespace exists after it.
+			text_edit->set_text("removed\nremoved\t\nkept\t\t");
+			text_edit->set_caret_line(0);
+			text_edit->set_caret_column(text_edit->get_line(0).length());
+			text_edit->add_caret(1, text_edit->get_line(1).length());
+			text_edit->add_caret(2, text_edit->get_line(2).length());
+
+			SEND_GUI_ACTION("ui_text_backspace_word");
+			CHECK(text_edit->get_viewport()->is_input_handled());
+			CHECK(text_edit->get_text() == "\n\nkept");
+			CHECK(text_edit->get_caret_count() == 3);
+			CHECK_FALSE(text_edit->has_selection(0));
+			CHECK(text_edit->get_caret_line(0) == 0);
+			CHECK(text_edit->get_caret_column(0) == 0);
+			CHECK_FALSE(text_edit->has_selection(1));
+			CHECK(text_edit->get_caret_line(1) == 1);
+			CHECK(text_edit->get_caret_column(1) == 0);
+			CHECK_FALSE(text_edit->has_selection(2));
+			CHECK(text_edit->get_caret_line(2) == 2);
+			CHECK(text_edit->get_caret_column(2) == 4);
+			text_edit->remove_secondary_carets();
+
+			// Don't remove whitespace after removing new line.
+			text_edit->set_text("test\nline1 \nline2\n\tline3  \t\t  \n  \t\t  mixed");
+			text_edit->set_caret_line(1);
+			text_edit->set_caret_column(0);
+			text_edit->add_caret(2, 0);
+			text_edit->add_caret(3, 1);
+			text_edit->add_caret(4, 0);
+
+			SEND_GUI_ACTION("ui_text_backspace_word");
+			CHECK(text_edit->get_viewport()->is_input_handled());
+			CHECK(text_edit->get_text() == "testline1 line2\nline3  \t\t    \t\t  mixed");
+			CHECK(text_edit->get_caret_count() == 4);
+			CHECK_FALSE(text_edit->has_selection(0));
+			CHECK(text_edit->get_caret_line(0) == 0);
+			CHECK(text_edit->get_caret_column(0) == 4);
+			CHECK_FALSE(text_edit->has_selection(1));
+			CHECK(text_edit->get_caret_line(1) == 0);
+			CHECK(text_edit->get_caret_column(1) == 10);
+			CHECK_FALSE(text_edit->has_selection(2));
+			CHECK(text_edit->get_caret_line(2) == 1);
+			CHECK(text_edit->get_caret_column(2) == 0);
+			CHECK_FALSE(text_edit->has_selection(3));
+			CHECK(text_edit->get_caret_line(3) == 1);
+			CHECK(text_edit->get_caret_column(3) == 11);
+			text_edit->remove_secondary_carets();
+
+			// Remove letters, punctuation, and whitespace separately.
+			text_edit->set_text("test  ();{}func()");
+			text_edit->set_caret_line(0);
+			text_edit->set_caret_column(6);
+			text_edit->add_caret(0, 10);
+			text_edit->add_caret(0, 16);
+
+			SEND_GUI_ACTION("ui_text_backspace_word");
+			CHECK(text_edit->get_viewport()->is_input_handled());
+			CHECK(text_edit->get_text() == "test}func)");
+			CHECK(text_edit->get_caret_count() == 2);
+			CHECK_FALSE(text_edit->has_selection(0));
+			CHECK(text_edit->get_caret_line(0) == 0);
+			CHECK(text_edit->get_caret_column(0) == 4);
+			CHECK_FALSE(text_edit->has_selection(1));
+			CHECK(text_edit->get_caret_line(1) == 0);
+			CHECK(text_edit->get_caret_column(1) == 9);
+			text_edit->remove_secondary_carets();
 		}
 
 		SUBCASE("[TextEdit] ui_text_backspace_word same line") {
