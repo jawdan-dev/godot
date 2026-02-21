@@ -5062,6 +5062,75 @@ TEST_CASE("[SceneTree][TextEdit] text entry") {
 			CHECK(text_edit->get_caret_column(0) == 2);
 			text_edit->remove_secondary_carets();
 
+			// Include word in removal if single whitespace exists before it.
+			text_edit->set_text("removed\n\tremoved\n\t\tkept");
+			text_edit->set_caret_line(0);
+			text_edit->set_caret_column(0);
+			text_edit->add_caret(1, 0);
+			text_edit->add_caret(2, 0);
+
+			SEND_GUI_ACTION("ui_text_delete_word");
+			CHECK(text_edit->get_viewport()->is_input_handled());
+			CHECK(text_edit->get_text() == "\n\nkept");
+			CHECK(text_edit->get_caret_count() == 3);
+			CHECK_FALSE(text_edit->has_selection(0));
+			CHECK(text_edit->get_caret_line(0) == 0);
+			CHECK(text_edit->get_caret_column(0) == 0);
+			CHECK_FALSE(text_edit->has_selection(1));
+			CHECK(text_edit->get_caret_line(1) == 1);
+			CHECK(text_edit->get_caret_column(1) == 0);
+			CHECK_FALSE(text_edit->has_selection(2));
+			CHECK(text_edit->get_caret_line(2) == 2);
+			CHECK(text_edit->get_caret_column(2) == 0);
+
+			// Remove whitespace after new line.
+			text_edit->set_text("test\nline1\n line2\n\tline3\n  \t\t  mixed");
+			text_edit->set_caret_line(0);
+			text_edit->set_caret_column(4);
+			text_edit->add_caret(1, 5);
+			text_edit->add_caret(2, 6);
+			text_edit->add_caret(3, 6);
+
+			SEND_GUI_ACTION("ui_text_delete_word");
+			CHECK(text_edit->get_viewport()->is_input_handled());
+			CHECK(text_edit->get_text() == "testline1line2line3mixed");
+			CHECK(text_edit->get_caret_count() == 4);
+			CHECK_FALSE(text_edit->has_selection(0));
+			CHECK(text_edit->get_caret_line(0) == 0);
+			CHECK(text_edit->get_caret_column(0) == 4);
+			CHECK_FALSE(text_edit->has_selection(1));
+			CHECK(text_edit->get_caret_line(1) == 0);
+			CHECK(text_edit->get_caret_column(1) == 9);
+			CHECK_FALSE(text_edit->has_selection(2));
+			CHECK(text_edit->get_caret_line(2) == 0);
+			CHECK(text_edit->get_caret_column(2) == 14);
+			CHECK_FALSE(text_edit->has_selection(3));
+			CHECK(text_edit->get_caret_line(3) == 0);
+			CHECK(text_edit->get_caret_column(3) == 19);
+			text_edit->remove_secondary_carets();
+
+			// Remove letters, punctuation, and whitespace separately.
+			text_edit->set_text("test  ();{}func()");
+			text_edit->set_caret_line(0);
+			text_edit->set_caret_column(0);
+			text_edit->add_caret(0, 8);
+			text_edit->add_caret(0, 14);
+
+			SEND_GUI_ACTION("ui_text_delete_word");
+			CHECK(text_edit->get_viewport()->is_input_handled());
+			CHECK(text_edit->get_text() == "  ()fun()");
+			CHECK(text_edit->get_caret_count() == 3);
+			CHECK_FALSE(text_edit->has_selection(0));
+			CHECK(text_edit->get_caret_line(0) == 0);
+			CHECK(text_edit->get_caret_column(0) == 0);
+			CHECK_FALSE(text_edit->has_selection(1));
+			CHECK(text_edit->get_caret_line(1) == 0);
+			CHECK(text_edit->get_caret_column(1) == 4);
+			CHECK_FALSE(text_edit->has_selection(2));
+			CHECK(text_edit->get_caret_line(2) == 0);
+			CHECK(text_edit->get_caret_column(2) == 7);
+			text_edit->remove_secondary_carets();
+
 			// Remove when there are no words, only symbols.
 			text_edit->set_text("#{}");
 			text_edit->set_caret_line(0);
