@@ -64,6 +64,21 @@ public:
 		SELECTION_MODE_LINE
 	};
 
+	/* Caret Word Break */
+	enum CaretWordBreakMode {
+		CARET_WORD_BREAK_MODE_WORD,
+		CARET_WORD_BREAK_MODE_WORD_PUNCTUATION,
+		CARET_WORD_BREAK_MODE_INDIVIDUAL,
+	};
+
+	/* Caret Word Jump */
+	enum CaretWordJumpFlags {
+		CARET_WORD_JUMP_NONE = 0b1 << 0,
+		CARET_WORD_JUMP_SINGLE_WHITESPACE = 0b1 << 1,
+		CARET_WORD_JUMP_WHITESPACE = 0b1 << 2,
+		CARET_WORD_JUMP_SINGLE_PUNCTUATION = 0b1 << 3,
+	};
+
 	/* Line Wrapping.*/
 	enum LineWrappingMode {
 		LINE_WRAPPING_NONE,
@@ -694,7 +709,10 @@ private:
 	void _move_caret_document_end(bool p_select);
 	bool _clear_carets_and_selection();
 
-	PackedInt32Array _get_text_word_removal_breaks(int p_line);
+	/* Caret Word Jump: Helpers */
+	PackedInt32Array _get_text_word_breaks(int p_line, CaretWordBreakMode p_mode);
+	int _get_text_next_word_break_left(int p_line, int p_column, CaretWordBreakMode p_break_mode, uint32_t p_jump_flags);
+	int _get_text_next_word_break_right(int p_line, int p_column, CaretWordBreakMode p_break_mode, uint32_t p_jump_flags);
 
 protected:
 	void _notification(int p_what);
@@ -1208,6 +1226,8 @@ VARIANT_ENUM_CAST(TextEdit::EditAction);
 VARIANT_ENUM_CAST(TextEdit::CaretType);
 VARIANT_ENUM_CAST(TextEdit::LineWrappingMode);
 VARIANT_ENUM_CAST(TextEdit::SelectionMode);
+VARIANT_ENUM_CAST(TextEdit::CaretWordBreakMode);
+VARIANT_ENUM_CAST(TextEdit::CaretWordJumpFlags);
 VARIANT_ENUM_CAST(TextEdit::GutterType);
 VARIANT_ENUM_CAST(TextEdit::MenuItems);
 VARIANT_ENUM_CAST(TextEdit::SearchFlags);

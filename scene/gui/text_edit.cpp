@@ -2923,22 +2923,17 @@ void TextEdit::_move_caret_left(bool p_select, bool p_move_by_word) {
 			}
 			// If the caret is at the start of the line, and not on the first line, move it up to the end of the previous line.
 			int new_caret_line = get_caret_line(i) - get_next_visible_line_offset_from(get_caret_line(i) - 1, -1);
-			set_caret_line(new_caret_line, false, true, -1, i);
-			set_caret_column(text[get_caret_line(i)].length(), i == 0, i);
-		} else if (p_move_by_word) {
-			int caret_column = get_caret_column(i);
-			const PackedInt32Array words = TS->shaped_text_get_word_breaks(text.get_line_data(get_caret_line(i))->get_rid());
-			if (words.is_empty() || caret_column <= words[0]) {
-				// Move to the start when there are no more words.
-				caret_column = 0;
-			} else {
-				for (int j = words.size() - 2; j >= 0; j = j - 2) {
-					if (words[j] < caret_column) {
-						caret_column = words[j];
-						break;
-					}
-				}
+			int new_caret_column = text[new_caret_line].length();
+
+			if (p_move_by_word) {
+				// Move by word on next line.
+				new_caret_column = _get_text_next_word_break_left(new_caret_line, new_caret_column, CARET_WORD_BREAK_MODE_INDIVIDUAL, CARET_WORD_JUMP_WHITESPACE | CARET_WORD_JUMP_SINGLE_PUNCTUATION);
 			}
+
+			set_caret_line(new_caret_line, false, true, -1, i);
+			set_caret_column(new_caret_column, i == 0, i);
+		} else if (p_move_by_word) {
+			int caret_column = _get_text_next_word_break_left(get_caret_line(i), get_caret_column(i), CARET_WORD_BREAK_MODE_INDIVIDUAL, CARET_WORD_JUMP_WHITESPACE | CARET_WORD_JUMP_SINGLE_PUNCTUATION);
 			set_caret_column(caret_column, i == 0, i);
 		} else {
 			if (caret_mid_grapheme_enabled) {
@@ -2973,22 +2968,17 @@ void TextEdit::_move_caret_right(bool p_select, bool p_move_by_word) {
 			}
 			// If the caret is at the end of the line, and not on the last line, move it down to the beginning of the next line.
 			int new_caret_line = get_caret_line(i) + get_next_visible_line_offset_from(get_caret_line(i) + 1, 1);
-			set_caret_line(new_caret_line, false, true, -1, i);
-			set_caret_column(0, i == 0, i);
-		} else if (p_move_by_word) {
-			int caret_column = get_caret_column(i);
-			const PackedInt32Array words = TS->shaped_text_get_word_breaks(text.get_line_data(get_caret_line(i))->get_rid());
-			if (words.is_empty() || caret_column >= words[words.size() - 1]) {
-				// Move to the end when there are no more words.
-				caret_column = text[get_caret_line(i)].length();
-			} else {
-				for (int j = 1; j < words.size(); j = j + 2) {
-					if (words[j] > caret_column) {
-						caret_column = words[j];
-						break;
-					}
-				}
+			int new_caret_column = 0;
+
+			if (p_move_by_word) {
+				// Move by word on next line.
+				new_caret_column = _get_text_next_word_break_right(new_caret_line, new_caret_column, CARET_WORD_BREAK_MODE_INDIVIDUAL, CARET_WORD_JUMP_WHITESPACE | CARET_WORD_JUMP_SINGLE_PUNCTUATION);
 			}
+
+			set_caret_line(new_caret_line, false, true, -1, i);
+			set_caret_column(new_caret_column, i == 0, i);
+		} else if (p_move_by_word) {
+			int caret_column = _get_text_next_word_break_right(get_caret_line(i),  get_caret_column(i), CARET_WORD_BREAK_MODE_INDIVIDUAL, CARET_WORD_JUMP_WHITESPACE | CARET_WORD_JUMP_SINGLE_PUNCTUATION);
 			set_caret_column(caret_column, i == 0, i);
 		} else {
 			if (caret_mid_grapheme_enabled) {
@@ -3176,25 +3166,7 @@ void TextEdit::_do_backspace(bool p_word, bool p_all_to_left) {
 			// Remove text to the start of the word left of the caret.
 			int line = get_caret_line(caret_index);
 			int from_column = get_caret_column(caret_index);
-			int column = get_caret_column(caret_index);
-
-			// Get a list with the indices of the word break bounds of the given text line.
-			const PackedInt32Array word_breaks = _get_text_word_removal_breaks(line);
-			if (word_breaks.is_empty() || column <= word_breaks[0]) {
-				// Remove all the way to the start of the line when there are no workable word breaks.
-				column = 0;
-			} else {
-				// Otherwise search for the first word break that is smaller than the index from we're currently removing from.
-				for (int j = word_breaks.size() - 1; j >= 0; j--) {
-					// Allow a single whitespace to be included in the removal.
-					const bool include_whitespace = j > 0 && word_breaks[j] == (column - 1) && is_whitespace(text[line][column - 1]);
-
-					if (word_breaks[j] < column && !include_whitespace) {
-						column = word_breaks[j];
-						break;
-					}
-				}
-			}
+			int column = _get_text_next_word_break_left(line, from_column, CARET_WORD_BREAK_MODE_INDIVIDUAL, CARET_WORD_JUMP_SINGLE_WHITESPACE);
 
 			_remove_text(get_caret_line(caret_index), column, get_caret_line(caret_index), from_column);
 			collapse_carets(get_caret_line(caret_index), column, get_caret_line(caret_index), from_column);
@@ -3245,29 +3217,8 @@ void TextEdit::_delete(bool p_word, bool p_all_to_right) {
 			next_line = get_caret_line(caret_index);
 		} else if (p_word && get_caret_column(caret_index) < curline_len - 1) {
 			// Delete next word to right of caret.
-			int line = get_caret_line(caret_index);
-			int column = get_caret_column(caret_index);
-
-			// Get a list with the indices of the word break bounds of the given text line.
-			const PackedInt32Array word_breaks = _get_text_word_removal_breaks(line);
-			if (word_breaks.is_empty() || column >= word_breaks[word_breaks.size() - 1]) {
-				// Remove all the way to the end of the line when there are no workable word breaks.
-				column = text[get_caret_line(i)].length();
-			} else {
-				// Otherwise search for the first word break that is larger than the index from we're currently removing from.
-				for (int j = 0; j < word_breaks.size(); j++) {
-					// Allow a single whitespace to be included in the removal.
-					const bool include_whitespace = word_breaks[j] == (column + 1) && is_whitespace(text[line][column]);
-
-					if (word_breaks[j] > column && !include_whitespace) {
-						column = word_breaks[j];
-						break;
-					}
-				}
-			}
-
-			next_line = line;
-			next_column = column;
+			next_line = get_caret_line(caret_index);
+			next_column = _get_text_next_word_break_right(next_line, get_caret_column(caret_index), CARET_WORD_BREAK_MODE_INDIVIDUAL, CARET_WORD_JUMP_SINGLE_WHITESPACE);
 		} else {
 			// Delete one character.
 			if (caret_mid_grapheme_enabled) {
@@ -3279,13 +3230,7 @@ void TextEdit::_delete(bool p_word, bool p_all_to_right) {
 			if (p_word && is_whitespace(text[next_line][next_column])) {
 				// Remove whitespace until next word break.
 				// Due to earlier p_word case, the caret is expected to be on a newline.
-				const PackedInt32Array word_breaks = _get_text_word_removal_breaks(next_line);
-				for (int j = 0; j < word_breaks.size(); j++) {
-					if (word_breaks[j] > next_column) {
-						next_column = word_breaks[j];
-						break;
-					}
-				}
+				next_column = _get_text_next_word_break_right(next_line, 0, CARET_WORD_BREAK_MODE_INDIVIDUAL, CARET_WORD_JUMP_NONE);
 			}
 		}
 
@@ -3337,13 +3282,25 @@ bool TextEdit::_clear_carets_and_selection() {
 	return false;
 }
 
-PackedInt32Array TextEdit::_get_text_word_removal_breaks(int p_line) {
-	PackedInt32Array breaks;
+PackedInt32Array TextEdit::_get_text_word_breaks(int p_line, CaretWordBreakMode p_mode) {
 	Ref<TextParagraph> line_data = text.get_line_data(p_line);
 
-	// Break on individually for <text>, <spaces>, and <punctuation>.
-	breaks.append_array(TS->shaped_text_get_word_breaks(line_data->get_rid(), TextServer::GRAPHEME_IS_SPACE));
-	breaks.append_array(TS->shaped_text_get_word_breaks(line_data->get_rid(), TextServer::GRAPHEME_IS_PUNCTUATION));
+	PackedInt32Array breaks;
+	switch (p_mode) {
+		case CaretWordBreakMode::CARET_WORD_BREAK_MODE_WORD: {
+			// Break <text> on <punctuation> and <whitespace>.
+			breaks.append_array(TS->shaped_text_get_word_breaks(line_data->get_rid(), TextServer::GRAPHEME_IS_SPACE | TextServer::GRAPHEME_IS_PUNCTUATION));
+		} break;
+		case CaretWordBreakMode::CARET_WORD_BREAK_MODE_WORD_PUNCTUATION: {
+			// Consider <text> and <punctuation> as one, break on <whitespace>.
+			breaks.append_array(TS->shaped_text_get_word_breaks(line_data->get_rid(), TextServer::GRAPHEME_IS_SPACE));
+		} break;
+		case CaretWordBreakMode::CARET_WORD_BREAK_MODE_INDIVIDUAL: {
+			// Break individually for <text>, <whitespace>, and <punctuation>.
+			breaks.append_array(TS->shaped_text_get_word_breaks(line_data->get_rid(), TextServer::GRAPHEME_IS_SPACE));
+			breaks.append_array(TS->shaped_text_get_word_breaks(line_data->get_rid(), TextServer::GRAPHEME_IS_PUNCTUATION));
+		} break;
+	}
 
 	// Sort & remove duplicate breaks.
 	breaks.sort();
@@ -3354,6 +3311,92 @@ PackedInt32Array TextEdit::_get_text_word_removal_breaks(int p_line) {
 	}
 
 	return breaks;
+}
+
+int TextEdit::_get_text_next_word_break_left(int p_line, int p_column, CaretWordBreakMode p_break_mode, uint32_t p_jump_flags) {
+	const PackedInt32Array word_breaks = _get_text_word_breaks(p_line, p_break_mode);
+
+	int start = word_breaks.size() - 1;
+	while (start - 1 >= 0 && word_breaks[start - 1] >= p_column) {
+		start--;
+	}
+
+	int end = start;
+	bool first = true;
+	for (; end - 1 >= 0; end--) {
+		int right_column = (first ? p_column : word_breaks[end]) - 1;
+		int left_column = word_breaks[end - 1] - 1;
+		int length_to_last = right_column - left_column;
+		first = false;
+
+		bool at_start = end == start;
+		bool at_whitespace = is_whitespace(text[p_line][right_column]);
+		bool at_whitespace_next = left_column < 0 || is_whitespace(text[p_line][left_column]);
+		bool at_punctuation = is_punct(text[p_line][right_column]);
+
+		if ((p_jump_flags & CaretWordJumpFlags::CARET_WORD_JUMP_SINGLE_WHITESPACE) && at_start && at_whitespace && length_to_last == 1) {
+			start--;
+			continue;
+		}
+		if ((p_jump_flags & CaretWordJumpFlags::CARET_WORD_JUMP_WHITESPACE) && at_start && at_whitespace) {
+			start--;
+			continue;
+		}
+		if ((p_jump_flags & CaretWordJumpFlags::CARET_WORD_JUMP_SINGLE_PUNCTUATION) && at_start && at_punctuation && !at_whitespace_next && length_to_last == 1) {
+			continue;
+		}
+
+		break;
+	}
+	end--;
+
+	if (end < 0) {
+		return 0;
+	}
+	return word_breaks[end];
+}
+
+int TextEdit::_get_text_next_word_break_right(int p_line, int p_column, CaretWordBreakMode p_break_mode, uint32_t p_jump_flags) {
+	const PackedInt32Array word_breaks = _get_text_word_breaks(p_line, p_break_mode);
+
+	int start = 0;
+	while (start + 1 < word_breaks.size() && word_breaks[start + 1] <= p_column) {
+		start++;
+	}
+
+	int end = start;
+	bool first = true;
+	for (; end + 1 < word_breaks.size(); end++) {
+		int left_column = first ? p_column : word_breaks[end];
+		int right_column = word_breaks[end + 1];
+		int length_to_last = right_column - left_column;
+		first = false;
+
+		bool at_start = end == start;
+		bool at_whitespace = is_whitespace(text[p_line][left_column]);
+		bool at_whitespace_next = right_column >= text[p_line].size() || is_whitespace(text[p_line][right_column]);
+		bool at_punctuation = is_punct(text[p_line][left_column]);
+
+		if ((p_jump_flags & CaretWordJumpFlags::CARET_WORD_JUMP_SINGLE_WHITESPACE) && at_start && at_whitespace && length_to_last == 1) {
+			start++;
+			continue;
+		}
+		if ((p_jump_flags & CaretWordJumpFlags::CARET_WORD_JUMP_WHITESPACE) && at_start && at_whitespace) {
+			start++;
+			continue;
+		}
+		if ((p_jump_flags & CaretWordJumpFlags::CARET_WORD_JUMP_SINGLE_PUNCTUATION) && at_start && at_punctuation && !at_whitespace_next && length_to_last == 1) {
+			continue;
+		}
+
+		break;
+	}
+	end++;
+
+	if (end >= word_breaks.size()) {
+		return text[p_line].length();
+	}
+	return word_breaks[end];
 }
 
 void TextEdit::_update_placeholder() {
