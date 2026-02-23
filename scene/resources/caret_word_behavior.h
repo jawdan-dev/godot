@@ -36,6 +36,12 @@ class CaretWordBehavior : public Resource {
 	GDCLASS(CaretWordBehavior, Resource)
 
 public:
+	enum Preset {
+		PRESET_GODOT,
+		PRESET_VSCODE,
+		PRESET_CUSTOM,
+	};
+
 	enum BreakMode {
 		BREAK_MODE_WORD,
 		BREAK_MODE_WORD_AND_PUNCTUATION,
@@ -60,29 +66,25 @@ public:
 		uint32_t jump_flags = JUMP_FLAG_NONE;
 	};
 
-	struct FullBehavior {
+	struct ContextBehavior {
 		LineBehavior normal_behavior = {};
 		NewlineMode newline_mode = NEWLINE_MODE_NEVER;
 		LineBehavior newline_behavior = {};
 	};
 
+	struct FullBehavior {
+		ContextBehavior move_left;
+		ContextBehavior move_right;
+		ContextBehavior remove_left;
+		ContextBehavior remove_right;
+	};
+
 private:
-	FullBehavior move_left = {
-		.normal_behavior = { .break_mode = BREAK_MODE_WORD, .jump_flags = JUMP_FLAG_WHITESPACE },
-		.newline_mode = NEWLINE_MODE_NEVER,
-	};
-	FullBehavior move_right = {
-		.normal_behavior = { .break_mode = BREAK_MODE_WORD, .jump_flags = JUMP_FLAG_WHITESPACE },
-		.newline_mode = NEWLINE_MODE_NEVER,
-	};
-	FullBehavior remove_left = {
-		.normal_behavior = { .break_mode = BREAK_MODE_WORD, .jump_flags = JUMP_FLAG_WHITESPACE },
-		.newline_mode = NEWLINE_MODE_NEVER,
-	};
-	FullBehavior remove_right = {
-		.normal_behavior = { .break_mode = BREAK_MODE_WORD, .jump_flags = JUMP_FLAG_WHITESPACE },
-		.newline_mode = NEWLINE_MODE_NEVER,
-	};
+	static FullBehavior _get_preset_godot();
+	static FullBehavior _get_preset_vscode();
+	FullBehavior _get_preset(Preset p_preset) const;
+
+	FullBehavior behavior = _get_preset_godot();
 
 	enum NextCaretBehavior {
 		NEXT_CARET_BEHAVIOR_BREAK,
@@ -91,16 +93,28 @@ private:
 	};
 	NextCaretBehavior _get_next_word_caret_behavior(const String &p_line, int p_start_column, int p_next_column, const LineBehavior &p_behavior, bool p_at_start) const;
 	PackedInt32Array _get_word_break_carets(RID p_text_shaped, BreakMode p_mode) const;
-	int _get_next_word_caret_directional(RID p_text_shaped, int p_column, bool p_is_newline, const FullBehavior &p_behavior, int p_direction) const;
+	int _get_next_word_caret_directional(RID p_text_shaped, int p_column, bool p_is_newline, const ContextBehavior &p_behavior, int p_direction) const;
 
 protected:
 	static void _bind_methods();
 
 public:
-	static const CaretWordBehavior &get_fallback_caret_word_behavior();
+	static Ref<CaretWordBehavior> get_fallback_caret_word_behavior();
 
 	int get_next_word_caret_left(RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove) const;
 	int get_next_word_caret_right(RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove) const;
+
+	// Presets.
+	void set_preset(Preset p_preset);
+	Preset get_preset() const;
+	void set_move_left_preset(Preset p_preset);
+	Preset get_move_left_preset() const;
+	void set_move_right_preset(Preset p_preset);
+	Preset get_move_right_preset() const;
+	void set_remove_left_preset(Preset p_preset);
+	Preset get_remove_left_preset() const;
+	void set_remove_right_preset(Preset p_preset);
+	Preset get_remove_right_preset() const;
 
 	// Move left.
 	void set_move_left_normal_break_mode(BreakMode p_break_mode);
@@ -150,6 +164,9 @@ public:
 	void set_remove_right_newline_jump_flags(uint32_t p_jump_flags);
 	uint32_t get_remove_right_newline_jump_flags() const;
 };
+VARIANT_ENUM_CAST(CaretWordBehavior::Preset);
 VARIANT_ENUM_CAST(CaretWordBehavior::BreakMode);
 VARIANT_ENUM_CAST(CaretWordBehavior::JumpFlags);
 VARIANT_ENUM_CAST(CaretWordBehavior::NewlineMode);
+
+const bool operator==(const CaretWordBehavior::ContextBehavior &a, const CaretWordBehavior::ContextBehavior &b);

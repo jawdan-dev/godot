@@ -3300,7 +3300,7 @@ bool TextEdit::_clear_carets_and_selection() {
 int TextEdit::_get_next_word_caret_left(int p_line, int p_column, bool p_newline, bool p_is_remove) {
 	Ref<TextParagraph> ref_text = text.get_line_data(p_line);
 	if (!caret_word_behavior.is_valid()) {
-		return CaretWordBehavior::get_fallback_caret_word_behavior().get_next_word_caret_left(ref_text->get_rid(), p_column, p_newline, p_is_remove);
+		return CaretWordBehavior::get_fallback_caret_word_behavior()->get_next_word_caret_left(ref_text->get_rid(), p_column, p_newline, p_is_remove);
 	}
 	return caret_word_behavior->get_next_word_caret_left(ref_text->get_rid(), p_column, p_newline, p_is_remove);
 }
@@ -3308,7 +3308,7 @@ int TextEdit::_get_next_word_caret_left(int p_line, int p_column, bool p_newline
 int TextEdit::_get_next_word_caret_right(int p_line, int p_column, bool p_newline, bool p_is_remove) {
 	Ref<TextParagraph> ref_text = text.get_line_data(p_line);
 	if (!caret_word_behavior.is_valid()) {
-		return CaretWordBehavior::get_fallback_caret_word_behavior().get_next_word_caret_right(ref_text->get_rid(), p_column, p_newline, p_is_remove);
+		return CaretWordBehavior::get_fallback_caret_word_behavior()->get_next_word_caret_right(ref_text->get_rid(), p_column, p_newline, p_is_remove);
 	}
 	return caret_word_behavior->get_next_word_caret_right(ref_text->get_rid(), p_column, p_newline, p_is_remove);
 }
