@@ -34,6 +34,7 @@
 #include "scene/gui/popup_menu.h"
 #include "scene/gui/scroll_bar.h"
 #include "scene/main/timer.h"
+#include "scene/resources/caret_word_behavior.h"
 #include "scene/resources/syntax_highlighter.h"
 #include "scene/resources/text_paragraph.h"
 
@@ -53,45 +54,6 @@ public:
 	enum CaretType {
 		CARET_TYPE_LINE,
 		CARET_TYPE_BLOCK
-	};
-
-	/* Caret Word Behavior: Enums */
-	enum CaretWordBreakMode {
-		CARET_WORD_BREAK_MODE_WORD,
-		CARET_WORD_BREAK_MODE_WORD_AND_PUNCTUATION,
-		CARET_WORD_BREAK_MODE_WORD_OR_PUNCTUATION,
-	};
-
-	enum CaretWordJumpFlags {
-		CARET_WORD_JUMP_NONE = 0b0,
-		CARET_WORD_JUMP_SINGLE_WHITESPACE = 0b1 << 0,
-		CARET_WORD_JUMP_WHITESPACE = 0b1 << 1,
-		CARET_WORD_JUMP_SINGLE_PUNCTUATION = 0b1 << 2,
-	};
-
-	enum CaretWordNewlineMode {
-		CARET_WORD_NEWLINE_NEVER,
-		CARET_WORD_NEWLINE_ON_WHITESPACE,
-		CARET_WORD_NEWLINE_ALWAYS,
-	};
-
-	/* Caret Word Behavior: Structs */
-	struct CaretWordCaseBehavior {
-		CaretWordBreakMode break_mode = CARET_WORD_BREAK_MODE_WORD;
-		uint32_t jump_flags = CARET_WORD_JUMP_NONE;
-	};
-
-	struct CaretWordLineBehavior {
-		CaretWordCaseBehavior normal_behavior = {};
-		CaretWordNewlineMode newline_mode = CARET_WORD_NEWLINE_NEVER;
-		CaretWordCaseBehavior newline_behavior = {};
-	};
-
-	struct CaretWordBehavior {
-		CaretWordLineBehavior move_left;
-		CaretWordLineBehavior move_right;
-		CaretWordLineBehavior remove_left;
-		CaretWordLineBehavior remove_right;
 	};
 
 	/* Selection */
@@ -734,38 +696,9 @@ private:
 	bool _clear_carets_and_selection();
 
 	/* Caret Word Behavior */
-	CaretWordBehavior caret_word_behavior = {
-		.move_left = {
-				.normal_behavior = { .break_mode = CARET_WORD_BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = CARET_WORD_JUMP_WHITESPACE | CARET_WORD_JUMP_SINGLE_PUNCTUATION },
-				.newline_mode = CARET_WORD_NEWLINE_ALWAYS,
-				.newline_behavior = { .break_mode = CARET_WORD_BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = CARET_WORD_JUMP_WHITESPACE | CARET_WORD_JUMP_SINGLE_PUNCTUATION },
-		},
-		.move_right = {
-				.normal_behavior = { .break_mode = CARET_WORD_BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = CARET_WORD_JUMP_WHITESPACE | CARET_WORD_JUMP_SINGLE_PUNCTUATION },
-				.newline_mode = CARET_WORD_NEWLINE_ALWAYS,
-				.newline_behavior = { .break_mode = CARET_WORD_BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = CARET_WORD_JUMP_WHITESPACE | CARET_WORD_JUMP_SINGLE_PUNCTUATION },
-		},
-		.remove_left = {
-				.normal_behavior = { .break_mode = CARET_WORD_BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = CARET_WORD_JUMP_SINGLE_WHITESPACE },
-				.newline_mode = CARET_WORD_NEWLINE_NEVER,
-		},
-		.remove_right = {
-				.normal_behavior = { .break_mode = CARET_WORD_BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = CARET_WORD_JUMP_SINGLE_WHITESPACE },
-				.newline_mode = CARET_WORD_NEWLINE_ON_WHITESPACE,
-				.newline_behavior = { .break_mode = CARET_WORD_BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = CARET_WORD_JUMP_NONE },
-		},
-	};
-
-	PackedInt32Array _get_caret_word_breaks(int p_line, CaretWordBreakMode p_mode) const;
-	enum CaretWordCaseIterationBehavior {
-		CARET_WORD_CASE_ITERATION_BEHAVIOR_BREAK,
-		CARET_WORD_CASE_ITERATION_BEHAVIOR_CONTINUE,
-		CARET_WORD_CASE_ITERATION_BEHAVIOR_INCREMENT,
-	};
-	CaretWordCaseIterationBehavior _get_caret_next_case_behaviour(int p_line, int p_start_column, int p_next_column, const CaretWordCaseBehavior &p_behavior, bool p_at_start) const;
-	int _get_caret_next_word_break_directional(int p_line, int p_column, const CaretWordLineBehavior &p_line_behavior, bool p_is_newline, int p_direction) const;
-	int _get_caret_next_word_break_left(int p_line, int p_column, const CaretWordLineBehavior &p_line_behavior, bool p_is_newline) const;
-	int _get_caret_next_word_break_right(int p_line, int p_column, const CaretWordLineBehavior &p_line_behavior, bool p_is_newline) const;
+	Ref<CaretWordBehavior> caret_word_behavior;
+	int _get_next_word_caret_left(int p_line, int p_column, bool p_newline, bool p_is_remove);
+	int _get_next_word_caret_right(int p_line, int p_column, bool p_newline, bool p_is_remove);
 
 protected:
 	void _notification(int p_what);
@@ -1070,47 +1003,8 @@ public:
 	String get_word_under_caret(int p_caret = -1) const;
 
 	/* Caret Word Behavior */
-	void set_caret_word_behavior_move_left_normal_break_mode(CaretWordBreakMode p_break_mode);
-	CaretWordBreakMode get_caret_word_behavior_move_left_normal_break_mode() const;
-	void set_caret_word_behavior_move_left_normal_jump_flags(uint32_t p_jump_flags);
-	uint32_t get_caret_word_behavior_move_left_normal_jump_flags() const;
-	void set_caret_word_behavior_move_left_newline_mode(CaretWordNewlineMode p_newline_mode);
-	CaretWordNewlineMode get_caret_word_behavior_move_left_newline_mode() const;
-	void set_caret_word_behavior_move_left_newline_break_mode(CaretWordBreakMode p_break_mode);
-	CaretWordBreakMode get_caret_word_behavior_move_left_newline_break_mode() const;
-	void set_caret_word_behavior_move_left_newline_jump_flags(uint32_t p_jump_flags);
-	uint32_t get_caret_word_behavior_move_left_newline_jump_flags() const;
-	void set_caret_word_behavior_move_right_normal_break_mode(CaretWordBreakMode p_break_mode);
-	CaretWordBreakMode get_caret_word_behavior_move_right_normal_break_mode() const;
-	void set_caret_word_behavior_move_right_normal_jump_flags(uint32_t p_jump_flags);
-	uint32_t get_caret_word_behavior_move_right_normal_jump_flags() const;
-	void set_caret_word_behavior_move_right_newline_mode(CaretWordNewlineMode p_newline_mode);
-	CaretWordNewlineMode get_caret_word_behavior_move_right_newline_mode() const;
-	void set_caret_word_behavior_move_right_newline_break_mode(CaretWordBreakMode p_break_mode);
-	CaretWordBreakMode get_caret_word_behavior_move_right_newline_break_mode() const;
-	void set_caret_word_behavior_move_right_newline_jump_flags(uint32_t p_jump_flags);
-	uint32_t get_caret_word_behavior_move_right_newline_jump_flags() const;
-
-	void set_caret_word_behavior_remove_left_normal_break_mode(CaretWordBreakMode p_break_mode);
-	CaretWordBreakMode get_caret_word_behavior_remove_left_normal_break_mode() const;
-	void set_caret_word_behavior_remove_left_normal_jump_flags(uint32_t p_jump_flags);
-	uint32_t get_caret_word_behavior_remove_left_normal_jump_flags() const;
-	void set_caret_word_behavior_remove_left_newline_mode(CaretWordNewlineMode p_newline_mode);
-	CaretWordNewlineMode get_caret_word_behavior_remove_left_newline_mode() const;
-	void set_caret_word_behavior_remove_left_newline_break_mode(CaretWordBreakMode p_break_mode);
-	CaretWordBreakMode get_caret_word_behavior_remove_left_newline_break_mode() const;
-	void set_caret_word_behavior_remove_left_newline_jump_flags(uint32_t p_jump_flags);
-	uint32_t get_caret_word_behavior_remove_left_newline_jump_flags() const;
-	void set_caret_word_behavior_remove_right_normal_break_mode(CaretWordBreakMode p_break_mode);
-	CaretWordBreakMode get_caret_word_behavior_remove_right_normal_break_mode() const;
-	void set_caret_word_behavior_remove_right_normal_jump_flags(uint32_t p_jump_flags);
-	uint32_t get_caret_word_behavior_remove_right_normal_jump_flags() const;
-	void set_caret_word_behavior_remove_right_newline_mode(CaretWordNewlineMode p_newline_mode);
-	CaretWordNewlineMode get_caret_word_behavior_remove_right_newline_mode() const;
-	void set_caret_word_behavior_remove_right_newline_break_mode(CaretWordBreakMode p_break_mode);
-	CaretWordBreakMode get_caret_word_behavior_remove_right_newline_break_mode() const;
-	void set_caret_word_behavior_remove_right_newline_jump_flags(uint32_t p_jump_flags);
-	uint32_t get_caret_word_behavior_remove_right_newline_jump_flags() const;
+	void set_caret_word_behavior(const Ref<CaretWordBehavior> &p_word_behavior);
+	Ref<CaretWordBehavior> get_caret_word_behavior() const;
 
 	/* Selection. */
 	void set_selecting_enabled(bool p_enabled);
@@ -1320,9 +1214,6 @@ public:
 
 VARIANT_ENUM_CAST(TextEdit::EditAction);
 VARIANT_ENUM_CAST(TextEdit::CaretType);
-VARIANT_ENUM_CAST(TextEdit::CaretWordBreakMode);
-VARIANT_ENUM_CAST(TextEdit::CaretWordJumpFlags);
-VARIANT_ENUM_CAST(TextEdit::CaretWordNewlineMode);
 VARIANT_ENUM_CAST(TextEdit::SelectionMode);
 VARIANT_ENUM_CAST(TextEdit::LineWrappingMode);
 VARIANT_ENUM_CAST(TextEdit::GutterType);

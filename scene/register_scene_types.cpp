@@ -118,6 +118,7 @@
 #include "scene/resources/camera_attributes.h"
 #include "scene/resources/camera_texture.h"
 #include "scene/resources/canvas_item_material.h"
+#include "scene/resources/caret_word_behavior.h"
 #include "scene/resources/color_palette.h"
 #include "scene/resources/compositor.h"
 #include "scene/resources/compressed_texture.h"
@@ -1109,6 +1110,7 @@ void register_scene_types() {
 
 	GDREGISTER_CLASS(TextLine);
 	GDREGISTER_CLASS(TextParagraph);
+	GDREGISTER_CLASS(CaretWordBehavior);
 
 	GDREGISTER_VIRTUAL_CLASS(StyleBox);
 	GDREGISTER_CLASS(StyleBoxEmpty);
