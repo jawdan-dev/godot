@@ -56,6 +56,7 @@
 #include "modules/regex/regex.h"
 #include "scene/gui/color_picker.h"
 #include "scene/gui/file_dialog.h"
+#include "scene/resources/caret_word_behavior.h"
 #include "scene/main/node.h"
 #include "scene/main/scene_tree.h"
 #include "scene/main/window.h"
@@ -811,6 +812,44 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	EDITOR_SETTING_BASIC(Variant::INT, PROPERTY_HINT_RANGE, "text_editor/behavior/indent/size", 4, "1,64,1") // size of 0 crashes.
 	_initial_set("text_editor/behavior/indent/auto_indent", true);
 	_initial_set("text_editor/behavior/indent/indent_wrapped_lines", true);
+
+	// Behavior: Caret Word Jump
+	{
+		const char *preset_hint = "Godot,VSCode,Custom";
+		const char *break_mode_hint = "Word,Word and Punctuation,Word or Punctuation";
+		const char *jump_flag_hint = "Single Whitespace,Whitespace,Single Punctuation";
+		const char *newline_mode_hint = "Never,On Whitespace,Always";
+		CaretWordBehavior default_behavior;
+
+		EDITOR_SETTING_BASIC(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/presets/move_left", default_behavior.get_move_left_preset(), preset_hint);
+		EDITOR_SETTING_BASIC(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/presets/move_right", default_behavior.get_move_right_preset(), preset_hint);
+		EDITOR_SETTING_BASIC(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/presets/remove_left", default_behavior.get_remove_left_preset(), preset_hint);
+		EDITOR_SETTING_BASIC(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/presets/remove_right", default_behavior.get_remove_right_preset(), preset_hint);
+
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/move_left/normal_break_mode", default_behavior.get_move_left_normal_break_mode(), break_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_FLAGS, "text_editor/behavior/caret_word_behavior/custom/move_left/normal_jump_flags", default_behavior.get_move_left_normal_jump_flags(), jump_flag_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/move_left/newline_mode", default_behavior.get_move_left_newline_mode(), newline_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/move_left/newline_break_mode", default_behavior.get_move_left_newline_break_mode(), break_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_FLAGS, "text_editor/behavior/caret_word_behavior/custom/move_left/newline_jump_flags", default_behavior.get_move_left_newline_jump_flags(), jump_flag_hint);
+
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/move_right/normal_break_mode", default_behavior.get_move_right_normal_break_mode(), break_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_FLAGS, "text_editor/behavior/caret_word_behavior/custom/move_right/normal_jump_flags", default_behavior.get_move_right_normal_jump_flags(), jump_flag_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/move_right/newline_mode", default_behavior.get_move_right_newline_mode(), newline_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/move_right/newline_break_mode", default_behavior.get_move_right_newline_break_mode(), break_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_FLAGS, "text_editor/behavior/caret_word_behavior/custom/move_right/newline_jump_flags", default_behavior.get_move_right_newline_jump_flags(), jump_flag_hint);
+
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/remove_left/normal_break_mode", default_behavior.get_remove_left_normal_break_mode(), break_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_FLAGS, "text_editor/behavior/caret_word_behavior/custom/remove_left/normal_jump_flags", default_behavior.get_remove_left_normal_jump_flags(), jump_flag_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/remove_left/newline_mode", default_behavior.get_remove_left_newline_mode(), newline_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/remove_left/newline_break_mode", default_behavior.get_remove_left_newline_break_mode(), break_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_FLAGS, "text_editor/behavior/caret_word_behavior/custom/remove_left/newline_jump_flags", default_behavior.get_remove_left_newline_jump_flags(), jump_flag_hint);
+
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/remove_right/normal_break_mode", default_behavior.get_remove_right_normal_break_mode(), break_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_FLAGS, "text_editor/behavior/caret_word_behavior/custom/remove_right/normal_jump_flags", default_behavior.get_remove_right_normal_jump_flags(), jump_flag_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/remove_right/newline_mode", default_behavior.get_remove_right_newline_mode(), newline_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "text_editor/behavior/caret_word_behavior/custom/remove_right/newline_break_mode", default_behavior.get_remove_right_newline_break_mode(), break_mode_hint);
+		EDITOR_SETTING(Variant::INT, PROPERTY_HINT_FLAGS, "text_editor/behavior/caret_word_behavior/custom/remove_right/newline_jump_flags", default_behavior.get_remove_right_newline_jump_flags(), jump_flag_hint);
+	}
 
 	// Behavior: Files
 	_initial_set("text_editor/behavior/files/trim_trailing_whitespace_on_save", false);
