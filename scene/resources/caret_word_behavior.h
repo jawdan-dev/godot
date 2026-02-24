@@ -194,4 +194,4 @@ VARIANT_ENUM_CAST(CaretWordBehavior::BreakFlags);
 VARIANT_ENUM_CAST(CaretWordBehavior::JumpFlags);
 VARIANT_ENUM_CAST(CaretWordBehavior::NewlineMode);
 
-const bool operator==(const CaretWordBehavior::ContextBehavior &a, const CaretWordBehavior::ContextBehavior &b);
+bool operator==(const CaretWordBehavior::ContextBehavior &a, const CaretWordBehavior::ContextBehavior &b);
