@@ -3155,15 +3155,17 @@ void TextEdit::_do_backspace(bool p_word, bool p_all_to_left) {
 			backspace(caret_index);
 
 			if (onto_newline && p_word) {
-				// Remove text to the start of the next 'word' left of the caret.
+				// Remove text to the start of the next 'word' left of the caret on newline.
 				int line = get_caret_line(caret_index);
 				int from_column = get_caret_column(caret_index);
-				int column = _get_next_word_caret_left(line, from_column, true, true);
+				int to_column = _get_next_word_caret_left(line, from_column, true, true);
 
-				_remove_text(get_caret_line(caret_index), column, get_caret_line(caret_index), from_column);
-				collapse_carets(get_caret_line(caret_index), column, get_caret_line(caret_index), from_column);
-				set_caret_column(column, caret_index == 0, caret_index);
-				_offset_carets_after(get_caret_line(caret_index), from_column, get_caret_line(caret_index), column);
+				if (from_column != to_column) {
+					_remove_text(get_caret_line(caret_index), to_column, get_caret_line(caret_index), from_column);
+					collapse_carets(get_caret_line(caret_index), to_column, get_caret_line(caret_index), from_column);
+					set_caret_column(to_column, caret_index == 0, caret_index);
+					_offset_carets_after(get_caret_line(caret_index), from_column, get_caret_line(caret_index), to_column);
+				}
 			}
 			continue;
 		}
@@ -3182,12 +3184,14 @@ void TextEdit::_do_backspace(bool p_word, bool p_all_to_left) {
 			// Remove text to the start of the next 'word' left of the caret.
 			int line = get_caret_line(caret_index);
 			int from_column = get_caret_column(caret_index);
-			int column = _get_next_word_caret_left(line, from_column, false, true);
+			int to_column = _get_next_word_caret_left(line, from_column, false, true);
 
-			_remove_text(get_caret_line(caret_index), column, get_caret_line(caret_index), from_column);
-			collapse_carets(get_caret_line(caret_index), column, get_caret_line(caret_index), from_column);
-			set_caret_column(column, caret_index == 0, caret_index);
-			_offset_carets_after(get_caret_line(caret_index), from_column, get_caret_line(caret_index), column);
+			if (from_column != to_column) {
+				_remove_text(get_caret_line(caret_index), to_column, get_caret_line(caret_index), from_column);
+				collapse_carets(get_caret_line(caret_index), to_column, get_caret_line(caret_index), from_column);
+				set_caret_column(to_column, caret_index == 0, caret_index);
+				_offset_carets_after(get_caret_line(caret_index), from_column, get_caret_line(caret_index), to_column);
+			}
 		}
 	}
 
