@@ -103,31 +103,31 @@ private:
 	static FullBehavior _get_preset_rider();
 	static FullBehavior _get_preset_geany();
 	static FullBehavior _get_preset_kate();
+
+	static FullBehavior _get_fallback();
 	FullBehavior _get_preset(Preset p_preset) const;
 
-	FullBehavior behavior = _get_preset_godot();
+	FullBehavior behavior = _get_fallback();
 
-	bool is_bracket(char32_t p_char) const;
-	bool is_directional_bracket(char32_t p_char, int p_direction) const;
-	bool is_punct(char32_t p_char) const;
+	static bool is_bracket(char32_t p_char);
+	static bool is_directional_bracket(char32_t p_char, int p_direction);
+	static bool is_punct(char32_t p_char);
 
 	enum NextCaretBehavior {
 		NEXT_CARET_BEHAVIOR_BREAK,
 		NEXT_CARET_BEHAVIOR_CONTINUE,
 		NEXT_CARET_BEHAVIOR_INCREMENT,
 	};
-	NextCaretBehavior _get_next_word_caret_behavior(const String &p_line, int p_start_column, int p_next_column, const LineBehavior &p_behavior, bool p_at_start) const;
-	PackedInt32Array _get_word_break_carets(RID p_text_shaped, const LineBehavior &p_behavior, int p_direction) const;
-	int _get_next_word_caret_directional(RID p_text_shaped, int p_column, bool p_is_newline, const ContextBehavior &p_behavior, int p_direction) const;
+	static NextCaretBehavior _get_next_word_caret_behavior(const String &p_line, int p_start_column, int p_next_column, const LineBehavior &p_behavior, bool p_at_start);
+	static PackedInt32Array _get_word_break_carets(RID p_text_shaped, const LineBehavior &p_behavior, int p_direction);
+	static int _get_next_word_caret_directional(RID p_text_shaped, int p_column, bool p_is_newline, const ContextBehavior &p_behavior, int p_direction);
 
 protected:
 	static void _bind_methods();
 
 public:
-	static Ref<CaretWordBehavior> get_fallback_caret_word_behavior();
-
-	int get_next_word_caret_left(RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove) const;
-	int get_next_word_caret_right(RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove) const;
+	static int get_next_word_caret_left(Ref<CaretWordBehavior> p_behavior, RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove);
+	static int get_next_word_caret_right(Ref<CaretWordBehavior> p_behavior, RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove);
 
 	// Presets.
 	void set_preset(Preset p_preset);

@@ -195,7 +195,9 @@ CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_rider() {
 	return behavior;
 }
 CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_geany() {
-	// TODO: Recursive newline up/down if empty line. Requires a rework of (at least) TextEdit if this is to be added...
+	// TODO: Recursive newline up/down if empty line.
+	// Requires a rework of (at least) TextEdit's move_caret_x and backspace/delete functions if this is to be added...
+
 	FullBehavior behavior;
 	behavior.move_left.normal_behavior.break_flags = BREAK_FLAG_WORDS;
 	behavior.move_left.normal_behavior.jump_flags = JUMP_FLAG_WHITESPACE;
@@ -252,6 +254,9 @@ CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_kate() {
 	return behavior;
 }
 
+CaretWordBehavior::FullBehavior CaretWordBehavior::_get_fallback() {
+	return _get_preset_godot();
+}
 CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset(Preset p_preset) const {
 	switch (p_preset) {
 		case PRESET_GODOT:
@@ -276,22 +281,22 @@ CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset(Preset p_preset) 
 	return behavior;
 }
 
-bool CaretWordBehavior::is_bracket(char32_t p_char) const {
+bool CaretWordBehavior::is_bracket(char32_t p_char) {
 	return p_char == '(' || p_char == ')' ||
 			p_char == '[' || p_char == ']' ||
 			p_char == '{' || p_char == '}' ||
 			p_char == '<' || p_char == '>';
 }
-bool CaretWordBehavior::is_directional_bracket(char32_t p_char, int p_direction) const {
+bool CaretWordBehavior::is_directional_bracket(char32_t p_char, int p_direction) {
 	DEV_ASSERT(p_direction == 1 || p_direction == -1);
 	return (p_direction == -1 && (p_char == '(' || p_char == '[' || p_char == '{' || p_char == '<')) ||
 			(p_direction == 1 && (p_char == ')' || p_char == ']' || p_char == '}' || p_char == '>'));
 }
-bool CaretWordBehavior::is_punct(char32_t p_char) const {
+bool CaretWordBehavior::is_punct(char32_t p_char) {
 	return ::is_punct(p_char);
 }
 
-CaretWordBehavior::NextCaretBehavior CaretWordBehavior::_get_next_word_caret_behavior(const String &p_line, int p_start_column, int p_next_column, const LineBehavior &p_behavior, bool p_at_start) const {
+CaretWordBehavior::NextCaretBehavior CaretWordBehavior::_get_next_word_caret_behavior(const String &p_line, int p_start_column, int p_next_column, const LineBehavior &p_behavior, bool p_at_start) {
 	bool start_column_valid = 0 <= p_start_column && p_start_column < p_line.length();
 	bool next_column_valid = 0 <= p_next_column && p_next_column < p_line.length();
 
@@ -337,28 +342,35 @@ CaretWordBehavior::NextCaretBehavior CaretWordBehavior::_get_next_word_caret_beh
 		at_bracket_next = false;
 	}
 
-	// Actual behavior!
-	if (!at_bracket_next) {
-		if ((p_behavior.jump_flags & JUMP_FLAG_SINGLE_WHITESPACE) && p_at_start && at_whitespace && length_to_last == 1) {
-			return NEXT_CARET_BEHAVIOR_INCREMENT;
-		}
-		if ((p_behavior.jump_flags & JUMP_FLAG_WHITESPACE) && p_at_start && at_whitespace) {
-			return NEXT_CARET_BEHAVIOR_INCREMENT;
-		}
-		if ((p_behavior.jump_flags & JUMP_FLAG_SINGLE_PUNCTUATION) && p_at_start && at_punctuation && !at_whitespace_next && length_to_last == 1) {
-			return NEXT_CARET_BEHAVIOR_CONTINUE;
-		}
-		if ((p_behavior.jump_flags & JUMP_FLAG_PUNCTUATION) && p_at_start && at_punctuation && !at_whitespace_next) {
-			return NEXT_CARET_BEHAVIOR_CONTINUE;
-		}
-		if ((p_behavior.jump_flags & JUMP_FLAG_TRAILING_WHITESPACE) && !p_at_start && at_whitespace) {
-			return NEXT_CARET_BEHAVIOR_CONTINUE;
-		}
+	// backet_next is a specific case, only available if <brackets> are to be broken at.
+	if (at_bracket_next) {
+		return NEXT_CARET_BEHAVIOR_BREAK;
+	}
+
+	// Ignore single initial <whitespace>.
+	if ((p_behavior.jump_flags & JUMP_FLAG_SINGLE_WHITESPACE) && p_at_start && at_whitespace && length_to_last == 1) {
+		return NEXT_CARET_BEHAVIOR_INCREMENT;
+	}
+	// Ignore initial <whitespace>.
+	if ((p_behavior.jump_flags & JUMP_FLAG_WHITESPACE) && p_at_start && at_whitespace) {
+		return NEXT_CARET_BEHAVIOR_INCREMENT;
+	}
+	// Ignore single initial <punctuation>.
+	if ((p_behavior.jump_flags & JUMP_FLAG_SINGLE_PUNCTUATION) && p_at_start && at_punctuation && !at_whitespace_next && length_to_last == 1) {
+		return NEXT_CARET_BEHAVIOR_CONTINUE;
+	}
+	// Ignore initial <punctuation>.
+	if ((p_behavior.jump_flags & JUMP_FLAG_PUNCTUATION) && p_at_start && at_punctuation && !at_whitespace_next) {
+		return NEXT_CARET_BEHAVIOR_CONTINUE;
+	}
+	// Ignore trailing <whitespace>.
+	if ((p_behavior.jump_flags & JUMP_FLAG_TRAILING_WHITESPACE) && !p_at_start && at_whitespace) {
+		return NEXT_CARET_BEHAVIOR_CONTINUE;
 	}
 
 	return NEXT_CARET_BEHAVIOR_BREAK;
 }
-PackedInt32Array CaretWordBehavior::_get_word_break_carets(RID p_text_shaped, const LineBehavior &p_behavior, int p_direction) const {
+PackedInt32Array CaretWordBehavior::_get_word_break_carets(RID p_text_shaped, const LineBehavior &p_behavior, int p_direction) {
 	String line = TS->shaped_get_text(p_text_shaped);
 	PackedInt32Array breaks = { 0, TS->shaped_get_text(p_text_shaped).length() };
 
@@ -440,10 +452,9 @@ PackedInt32Array CaretWordBehavior::_get_word_break_carets(RID p_text_shaped, co
 			breaks.remove_at(j);
 		}
 	}
-
 	return breaks;
 }
-int CaretWordBehavior::_get_next_word_caret_directional(RID p_text_shaped, int p_column, bool p_is_newline, const ContextBehavior &p_behavior, int p_direction) const {
+int CaretWordBehavior::_get_next_word_caret_directional(RID p_text_shaped, int p_column, bool p_is_newline, const ContextBehavior &p_behavior, int p_direction) {
 	DEV_ASSERT(p_direction == 1 || p_direction == -1);
 
 	String line = TS->shaped_get_text(p_text_shaped);
@@ -548,8 +559,8 @@ void CaretWordBehavior::_bind_methods() {
 	const char *jump_flag_hint = "Single Whitespace,Whitespace,Single Punctuation";
 	const char *newline_mode_hint = "Never,On Whitespace,Always";
 
-	ClassDB::bind_method(D_METHOD("get_next_word_caret_left", "text_shaped", "start_column", "is_newline", "is_remove"), &CaretWordBehavior::get_next_word_caret_left);
-	ClassDB::bind_method(D_METHOD("get_next_word_caret_right", "text_shaped", "start_column", "is_newline", "is_remove"), &CaretWordBehavior::get_next_word_caret_right);
+	ClassDB::bind_static_method("CaretWordBehavior", D_METHOD("get_next_word_caret_left", "caret_word_behavior", "text_shaped", "start_column", "is_newline", "is_remove"), &CaretWordBehavior::get_next_word_caret_left);
+	ClassDB::bind_static_method("CaretWordBehavior", D_METHOD("get_next_word_caret_right", "caret_word_behavior", "text_shaped", "start_column", "is_newline", "is_remove"), &CaretWordBehavior::get_next_word_caret_right);
 
 	ClassDB::bind_method(D_METHOD("set_preset", "preset"), &CaretWordBehavior::set_preset);
 	ClassDB::bind_method(D_METHOD("get_preset"), &CaretWordBehavior::get_preset);
@@ -683,19 +694,12 @@ void CaretWordBehavior::_bind_methods() {
 #undef ADD_PRESET_LINK
 }
 
-Ref<CaretWordBehavior> CaretWordBehavior::get_fallback_caret_word_behavior() {
-	// FIXME: Not 100% on this being the best way to do a fallback...
-	static Ref<CaretWordBehavior> fallback;
-	if (fallback.is_null()) {
-		fallback.instantiate();
-	}
-	return fallback;
-}
-
-int CaretWordBehavior::get_next_word_caret_left(RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove) const {
+int CaretWordBehavior::get_next_word_caret_left(Ref<CaretWordBehavior> p_behavior, RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove) {
+	FullBehavior behavior = p_behavior.is_valid() ? p_behavior->behavior : _get_fallback();
 	return _get_next_word_caret_directional(p_text_shaped, p_column, p_is_newline, p_is_remove ? behavior.remove_left : behavior.move_left, -1);
 }
-int CaretWordBehavior::get_next_word_caret_right(RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove) const {
+int CaretWordBehavior::get_next_word_caret_right(Ref<CaretWordBehavior> p_behavior, RID p_text_shaped, int p_column, bool p_is_newline, bool p_is_remove) {
+	FullBehavior behavior = p_behavior.is_valid() ? p_behavior->behavior : _get_fallback();
 	return _get_next_word_caret_directional(p_text_shaped, p_column, p_is_newline, p_is_remove ? behavior.remove_right : behavior.move_right, 1);
 }
 
