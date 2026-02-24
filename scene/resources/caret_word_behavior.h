@@ -34,6 +34,7 @@
 
 class CaretWordBehavior : public Resource {
 	GDCLASS(CaretWordBehavior, Resource)
+	RES_BASE_EXTENSION("caret_word_behavior");
 
 public:
 	enum Preset {

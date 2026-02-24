@@ -31,6 +31,7 @@
 #include "code_editor.h"
 
 #include "core/input/input.h"
+#include "core/io/resource_loader.h"
 #include "core/os/keyboard.h"
 #include "core/string/string_builder.h"
 #include "editor/editor_node.h"
@@ -1156,46 +1157,25 @@ void CodeTextEditor::update_editor_settings() {
 
 	// Behavior: Caret Word Behavior
 	{
-		Ref<CaretWordBehavior> text_editor_caret_word_behavior =  text_editor->get_caret_word_behavior();
-		bool text_editor_caret_word_behavior_initialized = text_editor_caret_word_behavior.is_null();
-		if (text_editor_caret_word_behavior_initialized) {
-			text_editor_caret_word_behavior.instantiate();
+		bool custom_behavior_set = false;
+
+		// Set text editor caret word behavior based on custom behavior resource.
+		const String custom_caret_word_behavior_path = EDITOR_GET("text_editor/behavior/caret_word_behavior/custom_behavior");
+		if (!custom_caret_word_behavior_path.is_empty()) {
+			Ref<CaretWordBehavior> custom_caret_word_behavior = ResourceLoader::load(custom_caret_word_behavior_path);
+			if (custom_caret_word_behavior.is_valid()) {
+				text_editor->set_caret_word_behavior(custom_caret_word_behavior);
+				custom_behavior_set = true;
+			}
 		}
 
-		// Move left.
-		text_editor_caret_word_behavior->set_move_left_normal_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/normal_break_flags"));
-		text_editor_caret_word_behavior->set_move_left_normal_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/normal_jump_flags"));
-		text_editor_caret_word_behavior->set_move_left_newline_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/newline_mode"));
-		text_editor_caret_word_behavior->set_move_left_newline_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/newline_break_flags"));
-		text_editor_caret_word_behavior->set_move_left_newline_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/newline_jump_flags"));
-		text_editor_caret_word_behavior->set_move_left_preset(EDITOR_GET("text_editor/behavior/caret_word_behavior/presets/move_left"));
+		// Set text editor caret word behavior based on preset.
+		if (custom_behavior_set == false) {
+			Ref<CaretWordBehavior> preset_caret_word_behavior;
+			preset_caret_word_behavior.instantiate();
 
-		// Move right.
-		text_editor_caret_word_behavior->set_move_right_normal_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/normal_break_flags"));
-		text_editor_caret_word_behavior->set_move_right_normal_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/normal_jump_flags"));
-		text_editor_caret_word_behavior->set_move_right_newline_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/newline_mode"));
-		text_editor_caret_word_behavior->set_move_right_newline_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/newline_break_flags"));
-		text_editor_caret_word_behavior->set_move_right_newline_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/newline_jump_flags"));
-		text_editor_caret_word_behavior->set_move_right_preset(EDITOR_GET("text_editor/behavior/caret_word_behavior/presets/move_right"));
-
-		// Remove left.
-		text_editor_caret_word_behavior->set_remove_left_normal_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/normal_break_flags"));
-		text_editor_caret_word_behavior->set_remove_left_normal_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/normal_jump_flags"));
-		text_editor_caret_word_behavior->set_remove_left_newline_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/newline_mode"));
-		text_editor_caret_word_behavior->set_remove_left_newline_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/newline_break_flags"));
-		text_editor_caret_word_behavior->set_remove_left_newline_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/newline_jump_flags"));
-		text_editor_caret_word_behavior->set_remove_left_preset(EDITOR_GET("text_editor/behavior/caret_word_behavior/presets/remove_left"));
-
-		// Remove right.
-		text_editor_caret_word_behavior->set_remove_right_normal_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/normal_break_flags"));
-		text_editor_caret_word_behavior->set_remove_right_normal_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/normal_jump_flags"));
-		text_editor_caret_word_behavior->set_remove_right_newline_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/newline_mode"));
-		text_editor_caret_word_behavior->set_remove_right_newline_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/newline_break_flags"));
-		text_editor_caret_word_behavior->set_remove_right_newline_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/newline_jump_flags"));
-		text_editor_caret_word_behavior->set_remove_right_preset(EDITOR_GET("text_editor/behavior/caret_word_behavior/presets/remove_right"));
-
-		if (text_editor_caret_word_behavior_initialized) {
-			text_editor->set_caret_word_behavior(text_editor_caret_word_behavior);
+			preset_caret_word_behavior->set_preset(EDITOR_GET("text_editor/behavior/caret_word_behavior/preset"));
+			text_editor->set_caret_word_behavior(preset_caret_word_behavior);
 		}
 	}
 
