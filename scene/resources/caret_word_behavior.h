@@ -39,20 +39,35 @@ public:
 	enum Preset {
 		PRESET_GODOT,
 		PRESET_VSCODE,
+		PRESET_VISUAL_STUDIO,
+		PRESET_ATOM,
+		PRESET_SUBLIME,
+		PRESET_RIDER,
+		PRESET_GEANY,
+		PRESET_KATE,
 		PRESET_CUSTOM,
 	};
 
-	enum BreakMode {
-		BREAK_MODE_WORD,
-		BREAK_MODE_WORD_AND_PUNCTUATION,
-		BREAK_MODE_WORD_OR_PUNCTUATION,
+	enum BreakFlags {
+		BREAK_FLAG_WORDS = 0b0,
+		BREAK_FLAG_WORD_PASCAL = 0b1 << 0,
+		BREAK_FLAG_WORD_SNAKE = 0b1 << 1,
+		BREAK_FLAG_PUNCTUATION_AS_WORD = 0b1 << 2,
+		BREAK_FLAG_SINGLE_PUNCTUATION = 0b1 << 3,
+		BREAK_FLAG_SEPARATE_PUNCTUATION = 0b1 << 4,
+		BREAK_FLAG_SINGLE_BRACKET = 0b1 << 5,
+		BREAK_FLAG_SEPARATE_BRACKET = 0b1 << 6,
+		BREAK_FLAG_DIRECTIONAL_BRACKETS = 0b1 << 7,
+		BREAK_FLAG_STRINGS = 0b1 << 8,
 	};
 
 	enum JumpFlags {
 		JUMP_FLAG_NONE = 0b0,
 		JUMP_FLAG_SINGLE_WHITESPACE = 0b1 << 0,
 		JUMP_FLAG_WHITESPACE = 0b1 << 1,
-		JUMP_FLAG_SINGLE_PUNCTUATION = 0b1 << 2,
+		JUMP_FLAG_TRAILING_WHITESPACE = 0b1 << 2,
+		JUMP_FLAG_SINGLE_PUNCTUATION = 0b1 << 3,
+		JUMP_FLAG_PUNCTUATION = 0b1 << 4,
 	};
 
 	enum NewlineMode {
@@ -62,7 +77,7 @@ public:
 	};
 
 	struct LineBehavior {
-		BreakMode break_mode = BREAK_MODE_WORD;
+		uint32_t break_flags = BREAK_FLAG_WORDS;
 		uint32_t jump_flags = JUMP_FLAG_NONE;
 	};
 
@@ -82,9 +97,19 @@ public:
 private:
 	static FullBehavior _get_preset_godot();
 	static FullBehavior _get_preset_vscode();
+	static FullBehavior _get_preset_visual_studio();
+	static FullBehavior _get_preset_atom();
+	static FullBehavior _get_preset_sublime();
+	static FullBehavior _get_preset_rider();
+	static FullBehavior _get_preset_geany();
+	static FullBehavior _get_preset_kate();
 	FullBehavior _get_preset(Preset p_preset) const;
 
 	FullBehavior behavior = _get_preset_godot();
+
+	bool is_bracket(char32_t p_char) const;
+	bool is_directional_bracket(char32_t p_char, int p_direction) const;
+	bool is_punct(char32_t p_char) const;
 
 	enum NextCaretBehavior {
 		NEXT_CARET_BEHAVIOR_BREAK,
@@ -92,7 +117,7 @@ private:
 		NEXT_CARET_BEHAVIOR_INCREMENT,
 	};
 	NextCaretBehavior _get_next_word_caret_behavior(const String &p_line, int p_start_column, int p_next_column, const LineBehavior &p_behavior, bool p_at_start) const;
-	PackedInt32Array _get_word_break_carets(RID p_text_shaped, BreakMode p_mode) const;
+	PackedInt32Array _get_word_break_carets(RID p_text_shaped, const LineBehavior &p_behavior, int p_direction) const;
 	int _get_next_word_caret_directional(RID p_text_shaped, int p_column, bool p_is_newline, const ContextBehavior &p_behavior, int p_direction) const;
 
 protected:
@@ -117,55 +142,55 @@ public:
 	Preset get_remove_right_preset() const;
 
 	// Move left.
-	void set_move_left_normal_break_mode(BreakMode p_break_mode);
-	BreakMode get_move_left_normal_break_mode() const;
+	void set_move_left_normal_break_flags(uint32_t p_break_flags);
+	uint32_t get_move_left_normal_break_flags() const;
 	void set_move_left_normal_jump_flags(uint32_t p_jump_flags);
 	uint32_t get_move_left_normal_jump_flags() const;
 	void set_move_left_newline_mode(NewlineMode p_newline_mode);
 	NewlineMode get_move_left_newline_mode() const;
-	void set_move_left_newline_break_mode(BreakMode p_break_mode);
-	BreakMode get_move_left_newline_break_mode() const;
+	void set_move_left_newline_break_flags(uint32_t p_break_flags);
+	uint32_t get_move_left_newline_break_flags() const;
 	void set_move_left_newline_jump_flags(uint32_t p_jump_flags);
 	uint32_t get_move_left_newline_jump_flags() const;
 
 	// Move right.
-	void set_move_right_normal_break_mode(BreakMode p_break_mode);
-	BreakMode get_move_right_normal_break_mode() const;
+	void set_move_right_normal_break_flags(uint32_t p_break_flags);
+	uint32_t get_move_right_normal_break_flags() const;
 	void set_move_right_normal_jump_flags(uint32_t p_jump_flags);
 	uint32_t get_move_right_normal_jump_flags() const;
 	void set_move_right_newline_mode(NewlineMode p_newline_mode);
 	NewlineMode get_move_right_newline_mode() const;
-	void set_move_right_newline_break_mode(BreakMode p_break_mode);
-	BreakMode get_move_right_newline_break_mode() const;
+	void set_move_right_newline_break_flags(uint32_t p_break_flags);
+	uint32_t get_move_right_newline_break_flags() const;
 	void set_move_right_newline_jump_flags(uint32_t p_jump_flags);
 	uint32_t get_move_right_newline_jump_flags() const;
 
 	// Remove left.
-	void set_remove_left_normal_break_mode(BreakMode p_break_mode);
-	BreakMode get_remove_left_normal_break_mode() const;
+	void set_remove_left_normal_break_flags(uint32_t p_break_flags);
+	uint32_t get_remove_left_normal_break_flags() const;
 	void set_remove_left_normal_jump_flags(uint32_t p_jump_flags);
 	uint32_t get_remove_left_normal_jump_flags() const;
 	void set_remove_left_newline_mode(NewlineMode p_newline_mode);
 	NewlineMode get_remove_left_newline_mode() const;
-	void set_remove_left_newline_break_mode(BreakMode p_break_mode);
-	BreakMode get_remove_left_newline_break_mode() const;
+	void set_remove_left_newline_break_flags(uint32_t p_break_flags);
+	uint32_t get_remove_left_newline_break_flags() const;
 	void set_remove_left_newline_jump_flags(uint32_t p_jump_flags);
 	uint32_t get_remove_left_newline_jump_flags() const;
 
 	// Remove right.
-	void set_remove_right_normal_break_mode(BreakMode p_break_mode);
-	BreakMode get_remove_right_normal_break_mode() const;
+	void set_remove_right_normal_break_flags(uint32_t p_break_flags);
+	uint32_t get_remove_right_normal_break_flags() const;
 	void set_remove_right_normal_jump_flags(uint32_t p_jump_flags);
 	uint32_t get_remove_right_normal_jump_flags() const;
 	void set_remove_right_newline_mode(NewlineMode p_newline_mode);
 	NewlineMode get_remove_right_newline_mode() const;
-	void set_remove_right_newline_break_mode(BreakMode p_break_mode);
-	BreakMode get_remove_right_newline_break_mode() const;
+	void set_remove_right_newline_break_flags(uint32_t p_break_flags);
+	uint32_t get_remove_right_newline_break_flags() const;
 	void set_remove_right_newline_jump_flags(uint32_t p_jump_flags);
 	uint32_t get_remove_right_newline_jump_flags() const;
 };
 VARIANT_ENUM_CAST(CaretWordBehavior::Preset);
-VARIANT_ENUM_CAST(CaretWordBehavior::BreakMode);
+VARIANT_ENUM_CAST(CaretWordBehavior::BreakFlags);
 VARIANT_ENUM_CAST(CaretWordBehavior::JumpFlags);
 VARIANT_ENUM_CAST(CaretWordBehavior::NewlineMode);
 

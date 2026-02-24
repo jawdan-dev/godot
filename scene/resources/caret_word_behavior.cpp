@@ -35,19 +35,19 @@
 CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_godot() {
 	return (FullBehavior){
 		.move_left = {
-				.normal_behavior = { .break_mode = BREAK_MODE_WORD, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORDS, .jump_flags = JUMP_FLAG_WHITESPACE },
 				.newline_mode = NEWLINE_MODE_NEVER,
 		},
 		.move_right = {
-				.normal_behavior = { .break_mode = BREAK_MODE_WORD, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORDS, .jump_flags = JUMP_FLAG_WHITESPACE },
 				.newline_mode = NEWLINE_MODE_NEVER,
 		},
 		.remove_left = {
-				.normal_behavior = { .break_mode = BREAK_MODE_WORD, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORDS, .jump_flags = JUMP_FLAG_WHITESPACE },
 				.newline_mode = NEWLINE_MODE_NEVER,
 		},
 		.remove_right = {
-				.normal_behavior = { .break_mode = BREAK_MODE_WORD, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORDS, .jump_flags = JUMP_FLAG_WHITESPACE },
 				.newline_mode = NEWLINE_MODE_NEVER,
 		},
 	};
@@ -55,94 +55,339 @@ CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_godot() {
 CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_vscode() {
 	return (FullBehavior){
 		.move_left = {
-				.normal_behavior = { .break_mode = BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_SINGLE_PUNCTUATION },
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_SINGLE_PUNCTUATION },
 				.newline_mode = NEWLINE_MODE_ALWAYS,
-				.newline_behavior = { .break_mode = BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_SINGLE_PUNCTUATION },
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_SINGLE_PUNCTUATION },
 		},
 		.move_right = {
-				.normal_behavior = { .break_mode = BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_SINGLE_PUNCTUATION },
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_SINGLE_PUNCTUATION },
 				.newline_mode = NEWLINE_MODE_ALWAYS,
-				.newline_behavior = { .break_mode = BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_SINGLE_PUNCTUATION },
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_SINGLE_PUNCTUATION },
 		},
 		.remove_left = {
-				.normal_behavior = { .break_mode = BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = JUMP_FLAG_SINGLE_WHITESPACE },
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_SINGLE_WHITESPACE },
 				.newline_mode = NEWLINE_MODE_NEVER,
 		},
 		.remove_right = {
-				.normal_behavior = { .break_mode = BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = JUMP_FLAG_SINGLE_WHITESPACE },
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_SINGLE_WHITESPACE },
 				.newline_mode = NEWLINE_MODE_ON_WHITESPACE,
-				.newline_behavior = { .break_mode = BREAK_MODE_WORD_OR_PUNCTUATION, .jump_flags = JUMP_FLAG_NONE },
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_NONE },
 		},
 	};
 }
+CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_visual_studio() {
+	return (FullBehavior){
+		.move_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ALWAYS,
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+		},
+		.move_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SINGLE_PUNCTUATION, .jump_flags = JUMP_FLAG_TRAILING_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ON_WHITESPACE,
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_NONE },
+		},
+		.remove_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ALWAYS,
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+		},
+		.remove_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SINGLE_PUNCTUATION, .jump_flags = JUMP_FLAG_TRAILING_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ON_WHITESPACE,
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_NONE },
+		},
+	};
+}
+CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_atom() {
+	return (FullBehavior){
+		.move_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ALWAYS,
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+		},
+		.move_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ALWAYS,
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+		},
+		.remove_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ALWAYS,
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+		},
+		.remove_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ALWAYS,
+				.newline_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+		},
+	};
+}
+CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_sublime() {
+	return (FullBehavior){
+		.move_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION | BREAK_FLAG_SEPARATE_BRACKET | BREAK_FLAG_DIRECTIONAL_BRACKETS, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_PUNCTUATION },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.move_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION | BREAK_FLAG_SEPARATE_BRACKET | BREAK_FLAG_DIRECTIONAL_BRACKETS, .jump_flags = JUMP_FLAG_WHITESPACE | JUMP_FLAG_PUNCTUATION },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.remove_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_SINGLE_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.remove_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_SINGLE_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+	};
+}
+CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_rider() {
+	return (FullBehavior){
+		.move_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION | BREAK_FLAG_STRINGS, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.move_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION | BREAK_FLAG_STRINGS, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.remove_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION | BREAK_FLAG_STRINGS, .jump_flags = JUMP_FLAG_NONE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.remove_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_SEPARATE_PUNCTUATION | BREAK_FLAG_STRINGS, .jump_flags = JUMP_FLAG_NONE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+	};
+}
+CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_geany() {
+	// TODO: Recursive newline up/down if empty line. Requires a rework of (at least) TextEdit if this is to be added...
+	return (FullBehavior){
+		.move_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORDS, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.move_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORDS, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		// REMOVE does whitespace + <newline after>
+		.remove_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORDS, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.remove_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORDS, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+	};
+}
+CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset_kate() {
+	// TODO: Support for behavior after <whitespace>\n<whitespace>| and CTRL+LEFT
+	return (FullBehavior){
+		.move_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORD_PASCAL | BREAK_FLAG_WORD_SNAKE | BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.move_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORD_PASCAL | BREAK_FLAG_WORD_SNAKE | BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_TRAILING_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ON_WHITESPACE,
+				.newline_behavior = { .break_flags = BREAK_FLAG_WORD_PASCAL | BREAK_FLAG_WORD_SNAKE | BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_NONE },
+		},
+		.remove_left = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORD_PASCAL | BREAK_FLAG_WORD_SNAKE | BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_NEVER,
+		},
+		.remove_right = {
+				.normal_behavior = { .break_flags = BREAK_FLAG_WORD_PASCAL | BREAK_FLAG_WORD_SNAKE | BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_TRAILING_WHITESPACE },
+				.newline_mode = NEWLINE_MODE_ON_WHITESPACE,
+				.newline_behavior = { .break_flags = BREAK_FLAG_WORD_PASCAL | BREAK_FLAG_WORD_SNAKE | BREAK_FLAG_SEPARATE_PUNCTUATION, .jump_flags = JUMP_FLAG_NONE },
+		},
+	};
+}
+
 CaretWordBehavior::FullBehavior CaretWordBehavior::_get_preset(Preset p_preset) const {
 	switch (p_preset) {
 		case PRESET_GODOT:
 			return _get_preset_godot();
 		case PRESET_VSCODE:
 			return _get_preset_vscode();
+		case PRESET_VISUAL_STUDIO:
+			return _get_preset_visual_studio();
+		case PRESET_ATOM:
+			return _get_preset_atom();
+		case PRESET_SUBLIME:
+			return _get_preset_sublime();
+		case PRESET_RIDER:
+			return _get_preset_rider();
+		case PRESET_GEANY:
+			return _get_preset_geany();
+		case PRESET_KATE:
+			return _get_preset_kate();
 		case PRESET_CUSTOM:
 			return behavior;
 	}
 	return behavior;
 }
 
+bool CaretWordBehavior::is_bracket(char32_t p_char) const {
+	return p_char == '(' || p_char == ')' ||
+			p_char == '[' || p_char == ']' ||
+			p_char == '{' || p_char == '}' ||
+			p_char == '<' || p_char == '>';
+}
+bool CaretWordBehavior::is_directional_bracket(char32_t p_char, int p_direction) const {
+	DEV_ASSERT(p_direction == 1 || p_direction == -1);
+	return (p_direction == -1 && (p_char == '(' || p_char == '[' || p_char == '{' || p_char == '<')) ||
+			(p_direction == 1 && (p_char == ')' || p_char == ']' || p_char == '}' || p_char == '>'));
+}
+bool CaretWordBehavior::is_punct(char32_t p_char) const {
+	return ::is_punct(p_char);
+}
+
 CaretWordBehavior::NextCaretBehavior CaretWordBehavior::_get_next_word_caret_behavior(const String &p_line, int p_start_column, int p_next_column, const LineBehavior &p_behavior, bool p_at_start) const {
 	bool start_column_valid = 0 <= p_start_column && p_start_column < p_line.length();
 	bool next_column_valid = 0 <= p_next_column && p_next_column < p_line.length();
+
+	int direction = p_next_column - p_start_column >= 0 ? 1 : -1;
 
 	int length_to_last = (p_next_column > p_start_column) ? (p_next_column - p_start_column) : (p_start_column - p_next_column);
 	bool at_whitespace = !start_column_valid || is_whitespace(p_line[p_start_column]);
 	bool at_whitespace_next = !next_column_valid || is_whitespace(p_line[p_next_column]);
 	bool at_punctuation = start_column_valid && is_punct(p_line[p_start_column]);
 	bool at_punctuation_next = next_column_valid && is_punct(p_line[p_next_column]);
+	bool at_bracket = start_column_valid && is_bracket(p_line[p_start_column]);
+	bool at_bracket_next = next_column_valid && is_bracket(p_line[p_next_column]);
 
-	switch (p_behavior.break_mode) {
-		case BREAK_MODE_WORD: {
-			// Punctuation is considered as <whitespace>.
-			at_whitespace = at_whitespace || at_punctuation;
-			at_whitespace_next = at_whitespace_next || at_punctuation_next;
-			at_punctuation = false;
-			at_punctuation_next = false;
-		} break;
-		case BREAK_MODE_WORD_AND_PUNCTUATION: {
-			// Punctuation is considered as <word>.
-			at_punctuation = false;
-			at_punctuation_next = false;
-		} break;
-		case BREAK_MODE_WORD_OR_PUNCTUATION:
-			// Punctuation is considered as <punctuation>.
-			break;
+	// Directional brackets check.
+	if (p_behavior.break_flags & BREAK_FLAG_DIRECTIONAL_BRACKETS) {
+		at_bracket = at_bracket && is_directional_bracket(p_line[p_start_column], direction);
+		at_bracket_next = at_bracket_next && is_directional_bracket(p_line[p_next_column], direction);
 	}
 
-	if ((p_behavior.jump_flags & JUMP_FLAG_SINGLE_WHITESPACE) && p_at_start && at_whitespace && length_to_last == 1) {
-		return NEXT_CARET_BEHAVIOR_INCREMENT;
+	// Punctuation break flag checks.
+	if (p_behavior.break_flags & BREAK_FLAG_PUNCTUATION_AS_WORD) {
+		// Punctuation is considered as <word>.
+		at_punctuation = false;
+		at_punctuation_next = false;
+	} else if (!(p_behavior.break_flags & BREAK_FLAG_SEPARATE_PUNCTUATION)) {
+		// Punctuation is considered as <whitespace>.
+		at_whitespace = at_whitespace || at_punctuation;
+		at_whitespace_next = at_whitespace_next || at_punctuation_next;
+		at_punctuation = false;
+		at_punctuation_next = false;
+	} else {
+		// Punctuation is considered as <punctuation>.
 	}
-	if ((p_behavior.jump_flags & JUMP_FLAG_WHITESPACE) && p_at_start && at_whitespace) {
-		return NEXT_CARET_BEHAVIOR_INCREMENT;
+
+	// Bracket break flag checks.
+	if (p_behavior.break_flags & BREAK_FLAG_SEPARATE_BRACKET) {
+		// Brackets are considered as <brackets>, separate from <punctuation>.
+		at_punctuation = at_punctuation && !at_bracket;
+		at_punctuation_next = at_punctuation_next && !at_bracket_next;
+	} else {
+		// Brackets are not considered.
+		at_bracket = false;
+		at_bracket_next = false;
 	}
-	if ((p_behavior.jump_flags & JUMP_FLAG_SINGLE_PUNCTUATION) && p_at_start && at_punctuation && !at_whitespace_next && length_to_last == 1) {
-		return NEXT_CARET_BEHAVIOR_CONTINUE;
+
+	// Actual behavior!
+	if (!at_bracket_next) {
+		if ((p_behavior.jump_flags & JUMP_FLAG_SINGLE_WHITESPACE) && p_at_start && at_whitespace && length_to_last == 1) {
+			return NEXT_CARET_BEHAVIOR_INCREMENT;
+		}
+		if ((p_behavior.jump_flags & JUMP_FLAG_WHITESPACE) && p_at_start && at_whitespace) {
+			return NEXT_CARET_BEHAVIOR_INCREMENT;
+		}
+		if ((p_behavior.jump_flags & JUMP_FLAG_SINGLE_PUNCTUATION) && p_at_start && at_punctuation && !at_whitespace_next && length_to_last == 1) {
+			return NEXT_CARET_BEHAVIOR_CONTINUE;
+		}
+		if ((p_behavior.jump_flags & JUMP_FLAG_PUNCTUATION) && p_at_start && at_punctuation && !at_whitespace_next) {
+			return NEXT_CARET_BEHAVIOR_CONTINUE;
+		}
+		if ((p_behavior.jump_flags & JUMP_FLAG_TRAILING_WHITESPACE) && !p_at_start && at_whitespace) {
+			return NEXT_CARET_BEHAVIOR_CONTINUE;
+		}
 	}
 
 	return NEXT_CARET_BEHAVIOR_BREAK;
 }
-PackedInt32Array CaretWordBehavior::_get_word_break_carets(RID p_text_shaped, BreakMode p_mode) const {
+PackedInt32Array CaretWordBehavior::_get_word_break_carets(RID p_text_shaped, const LineBehavior &p_behavior, int p_direction) const {
+	String line = TS->shaped_get_text(p_text_shaped);
 	PackedInt32Array breaks = { 0, TS->shaped_get_text(p_text_shaped).length() };
-	switch (p_mode) {
-		case BREAK_MODE_WORD: {
-			// Break <text> on <punctuation> and <whitespace>.
-			breaks.append_array(TS->shaped_text_get_word_breaks(p_text_shaped, TextServer::GRAPHEME_IS_SPACE | TextServer::GRAPHEME_IS_PUNCTUATION));
-		} break;
-		case BREAK_MODE_WORD_AND_PUNCTUATION: {
-			// Consider <text> and <punctuation> as one, break on <whitespace>.
-			breaks.append_array(TS->shaped_text_get_word_breaks(p_text_shaped, TextServer::GRAPHEME_IS_SPACE));
-		} break;
-		case BREAK_MODE_WORD_OR_PUNCTUATION: {
-			// Break individually for <text>, <whitespace>, and <punctuation>.
-			breaks.append_array(TS->shaped_text_get_word_breaks(p_text_shaped, TextServer::GRAPHEME_IS_SPACE));
-			breaks.append_array(TS->shaped_text_get_word_breaks(p_text_shaped, TextServer::GRAPHEME_IS_PUNCTUATION));
-		} break;
+
+	// Get base <text> / <punctuation> / <whitespace> breaks.
+	if (p_behavior.break_flags & BREAK_FLAG_PUNCTUATION_AS_WORD) {
+		// Consider <text> and <punctuation> as one, break on <whitespace>.
+		breaks.append_array(TS->shaped_text_get_word_breaks(p_text_shaped, TextServer::GRAPHEME_IS_SPACE));
+	} else if (p_behavior.break_flags & BREAK_FLAG_SEPARATE_PUNCTUATION) {
+		// Break individually for <text>, <whitespace>, and <punctuation>.
+		breaks.append_array(TS->shaped_text_get_word_breaks(p_text_shaped, TextServer::GRAPHEME_IS_SPACE));
+		breaks.append_array(TS->shaped_text_get_word_breaks(p_text_shaped, TextServer::GRAPHEME_IS_PUNCTUATION));
+	} else {
+		// Break <text> on <punctuation> and <whitespace>.
+		breaks.append_array(TS->shaped_text_get_word_breaks(p_text_shaped, TextServer::GRAPHEME_IS_SPACE | TextServer::GRAPHEME_IS_PUNCTUATION));
+	}
+
+	// Break <punctuation> into individual breaks.
+	if (p_behavior.break_flags & BREAK_FLAG_SINGLE_PUNCTUATION) {
+		for (int i = 0; i < line.length(); i++) {
+			if (is_punct(line[i])) {
+				breaks.append(i);
+				breaks.append(i + 1);
+			}
+		}
+	}
+
+	// Break <brackets> into individual breaks
+	if (p_behavior.break_flags & BREAK_FLAG_SEPARATE_BRACKET) {
+		for (int i = 0; i < line.length(); i++) {
+			if (p_behavior.break_flags & BREAK_FLAG_DIRECTIONAL_BRACKETS) {
+				// Break only in one direction.
+				if (is_directional_bracket(line[i], p_direction)) {
+					breaks.append(i);
+					breaks.append(i + 1);
+				}
+			} else {
+				if (is_bracket(line[i])) {
+					breaks.append(i);
+					breaks.append(i + 1);
+				}
+			}
+		}
+	}
+
+	// Place caret breaks around "  symbols only on the edge: |"|""""|"|.
+	if (p_behavior.break_flags & BREAK_FLAG_STRINGS) {
+		for (int i = 0; i < line.length(); i++) {
+			if (line[i] == '\"' && ((i - 1 < 0 || line[i - 1] != '\"') || (i + 1 >= line.length() || line[i + 1] != '\"'))) {
+				breaks.append(i);
+				breaks.append(i + 1);
+			}
+		}
+	}
+
+	// PascalCase.
+	if (p_behavior.break_flags & BREAK_FLAG_WORD_PASCAL) {
+		for (int i = 0; i < line.length(); i++) {
+			// Break point at start of capital.
+			if ('A' < line[i] && line[i] < 'Z' && i + 1 < line.length() && 'a' < line[i + 1] && line[i + 1] < 'z') {
+				breaks.append(i);
+			}
+		}
+	}
+
+	// snake_case.
+	if (p_behavior.break_flags & BREAK_FLAG_WORD_SNAKE) {
+		for (int i = 0; i < line.length(); i++) {
+			// Break point at end of underscore.
+			if (line[i] == '_' && i + 1 < line.length() && line[i + 1] != '_') {
+				breaks.append(i + 1);
+			}
+		}
 	}
 
 	// Sort & remove duplicate breaks.
@@ -168,7 +413,7 @@ int CaretWordBehavior::_get_next_word_caret_directional(RID p_text_shaped, int p
 	}
 
 	const LineBehavior &line_behavior = p_is_newline ? p_behavior.newline_behavior : p_behavior.normal_behavior;
-	const PackedInt32Array word_breaks = _get_word_break_carets(p_text_shaped, line_behavior.break_mode);
+	const PackedInt32Array word_breaks = _get_word_break_carets(p_text_shaped, line_behavior, p_direction);
 
 	// Find starting word break index.
 	int start = 0;
@@ -225,20 +470,40 @@ int CaretWordBehavior::_get_next_word_caret_directional(RID p_text_shaped, int p
 void CaretWordBehavior::_bind_methods() {
 	BIND_ENUM_CONSTANT(PRESET_GODOT);
 	BIND_ENUM_CONSTANT(PRESET_VSCODE);
+	BIND_ENUM_CONSTANT(PRESET_VISUAL_STUDIO);
+	BIND_ENUM_CONSTANT(PRESET_ATOM);
+	BIND_ENUM_CONSTANT(PRESET_SUBLIME);
+	BIND_ENUM_CONSTANT(PRESET_RIDER);
+	BIND_ENUM_CONSTANT(PRESET_GEANY);
+	BIND_ENUM_CONSTANT(PRESET_KATE);
 	BIND_ENUM_CONSTANT(PRESET_CUSTOM);
 
-	BIND_ENUM_CONSTANT(BREAK_MODE_WORD);
-	BIND_ENUM_CONSTANT(BREAK_MODE_WORD_AND_PUNCTUATION);
-	BIND_ENUM_CONSTANT(BREAK_MODE_WORD_OR_PUNCTUATION);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_WORDS);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_WORD_PASCAL);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_WORD_SNAKE);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_PUNCTUATION_AS_WORD);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_SINGLE_PUNCTUATION);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_SEPARATE_PUNCTUATION);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_SINGLE_BRACKET);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_SEPARATE_BRACKET);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_DIRECTIONAL_BRACKETS);
+	BIND_ENUM_CONSTANT(BREAK_FLAG_STRINGS);
 
 	BIND_ENUM_CONSTANT(JUMP_FLAG_NONE);
 	BIND_ENUM_CONSTANT(JUMP_FLAG_SINGLE_WHITESPACE);
 	BIND_ENUM_CONSTANT(JUMP_FLAG_WHITESPACE);
+	BIND_ENUM_CONSTANT(JUMP_FLAG_TRAILING_WHITESPACE);
 	BIND_ENUM_CONSTANT(JUMP_FLAG_SINGLE_PUNCTUATION);
+	BIND_ENUM_CONSTANT(JUMP_FLAG_PUNCTUATION);
 
 	BIND_ENUM_CONSTANT(NEWLINE_MODE_NEVER);
 	BIND_ENUM_CONSTANT(NEWLINE_MODE_ON_WHITESPACE);
 	BIND_ENUM_CONSTANT(NEWLINE_MODE_ALWAYS);
+
+	const char *preset_hint = "Godot,VSCode,Visual Studio,Atom,Sublime,Rider,Geany,Kate,Custom";
+	const char *break_flag_hint = "Words,PascalCase,snake_case,Punctuation as Word,Single Punctuation,Separate Punctuation,Single Bracket,Separate Bracket";
+	const char *jump_flag_hint = "Single Whitespace,Whitespace,Single Punctuation";
+	const char *newline_mode_hint = "Never,On Whitespace,Always";
 
 	ClassDB::bind_method(D_METHOD("get_next_word_caret_left", "text_shaped", "start_column", "is_newline", "is_remove"), &CaretWordBehavior::get_next_word_caret_left);
 	ClassDB::bind_method(D_METHOD("get_next_word_caret_right", "text_shaped", "start_column", "is_newline", "is_remove"), &CaretWordBehavior::get_next_word_caret_right);
@@ -254,96 +519,90 @@ void CaretWordBehavior::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_remove_right_preset", "preset"), &CaretWordBehavior::set_remove_right_preset);
 	ClassDB::bind_method(D_METHOD("get_remove_right_preset"), &CaretWordBehavior::get_remove_right_preset);
 
-	ClassDB::bind_method(D_METHOD("set_move_left_normal_break_mode", "break_mode"), &CaretWordBehavior::set_move_left_normal_break_mode);
-	ClassDB::bind_method(D_METHOD("get_move_left_normal_break_mode"), &CaretWordBehavior::get_move_left_normal_break_mode);
+	ClassDB::bind_method(D_METHOD("set_move_left_normal_break_flags", "break_flags"), &CaretWordBehavior::set_move_left_normal_break_flags);
+	ClassDB::bind_method(D_METHOD("get_move_left_normal_break_flags"), &CaretWordBehavior::get_move_left_normal_break_flags);
 	ClassDB::bind_method(D_METHOD("set_move_left_normal_jump_flags", "jump_flags"), &CaretWordBehavior::set_move_left_normal_jump_flags);
 	ClassDB::bind_method(D_METHOD("get_move_left_normal_jump_flags"), &CaretWordBehavior::get_move_left_normal_jump_flags);
 	ClassDB::bind_method(D_METHOD("set_move_left_newline_mode", "newline_mode"), &CaretWordBehavior::set_move_left_newline_mode);
 	ClassDB::bind_method(D_METHOD("get_move_left_newline_mode"), &CaretWordBehavior::get_move_left_newline_mode);
-	ClassDB::bind_method(D_METHOD("set_move_left_newline_break_mode", "break_mode"), &CaretWordBehavior::set_move_left_newline_break_mode);
-	ClassDB::bind_method(D_METHOD("get_move_left_newline_break_mode"), &CaretWordBehavior::get_move_left_newline_break_mode);
+	ClassDB::bind_method(D_METHOD("set_move_left_newline_break_flags", "break_flags"), &CaretWordBehavior::set_move_left_newline_break_flags);
+	ClassDB::bind_method(D_METHOD("get_move_left_newline_break_flags"), &CaretWordBehavior::get_move_left_newline_break_flags);
 	ClassDB::bind_method(D_METHOD("set_move_left_newline_jump_flags", "jump_flags"), &CaretWordBehavior::set_move_left_newline_jump_flags);
 	ClassDB::bind_method(D_METHOD("get_move_left_newline_jump_flags"), &CaretWordBehavior::get_move_left_newline_jump_flags);
 
-	ClassDB::bind_method(D_METHOD("set_move_right_normal_break_mode", "break_mode"), &CaretWordBehavior::set_move_right_normal_break_mode);
-	ClassDB::bind_method(D_METHOD("get_move_right_normal_break_mode"), &CaretWordBehavior::get_move_right_normal_break_mode);
+	ClassDB::bind_method(D_METHOD("set_move_right_normal_break_flags", "break_flags"), &CaretWordBehavior::set_move_right_normal_break_flags);
+	ClassDB::bind_method(D_METHOD("get_move_right_normal_break_flags"), &CaretWordBehavior::get_move_right_normal_break_flags);
 	ClassDB::bind_method(D_METHOD("set_move_right_normal_jump_flags", "jump_flags"), &CaretWordBehavior::set_move_right_normal_jump_flags);
 	ClassDB::bind_method(D_METHOD("get_move_right_normal_jump_flags"), &CaretWordBehavior::get_move_right_normal_jump_flags);
 	ClassDB::bind_method(D_METHOD("set_move_right_newline_mode", "newline_mode"), &CaretWordBehavior::set_move_right_newline_mode);
 	ClassDB::bind_method(D_METHOD("get_move_right_newline_mode"), &CaretWordBehavior::get_move_right_newline_mode);
-	ClassDB::bind_method(D_METHOD("set_move_right_newline_break_mode", "break_mode"), &CaretWordBehavior::set_move_right_newline_break_mode);
-	ClassDB::bind_method(D_METHOD("get_move_right_newline_break_mode"), &CaretWordBehavior::get_move_right_newline_break_mode);
+	ClassDB::bind_method(D_METHOD("set_move_right_newline_break_flags", "break_flags"), &CaretWordBehavior::set_move_right_newline_break_flags);
+	ClassDB::bind_method(D_METHOD("get_move_right_newline_break_flags"), &CaretWordBehavior::get_move_right_newline_break_flags);
 	ClassDB::bind_method(D_METHOD("set_move_right_newline_jump_flags", "jump_flags"), &CaretWordBehavior::set_move_right_newline_jump_flags);
 	ClassDB::bind_method(D_METHOD("get_move_right_newline_jump_flags"), &CaretWordBehavior::get_move_right_newline_jump_flags);
 
-	ClassDB::bind_method(D_METHOD("set_remove_left_normal_break_mode", "break_mode"), &CaretWordBehavior::set_remove_left_normal_break_mode);
-	ClassDB::bind_method(D_METHOD("get_remove_left_normal_break_mode"), &CaretWordBehavior::get_remove_left_normal_break_mode);
+	ClassDB::bind_method(D_METHOD("set_remove_left_normal_break_flags", "break_flags"), &CaretWordBehavior::set_remove_left_normal_break_flags);
+	ClassDB::bind_method(D_METHOD("get_remove_left_normal_break_flags"), &CaretWordBehavior::get_remove_left_normal_break_flags);
 	ClassDB::bind_method(D_METHOD("set_remove_left_normal_jump_flags", "jump_flags"), &CaretWordBehavior::set_remove_left_normal_jump_flags);
 	ClassDB::bind_method(D_METHOD("get_remove_left_normal_jump_flags"), &CaretWordBehavior::get_remove_left_normal_jump_flags);
 	ClassDB::bind_method(D_METHOD("set_remove_left_newline_mode", "newline_mode"), &CaretWordBehavior::set_remove_left_newline_mode);
 	ClassDB::bind_method(D_METHOD("get_remove_left_newline_mode"), &CaretWordBehavior::get_remove_left_newline_mode);
-	ClassDB::bind_method(D_METHOD("set_remove_left_newline_break_mode", "break_mode"), &CaretWordBehavior::set_remove_left_newline_break_mode);
-	ClassDB::bind_method(D_METHOD("get_remove_left_newline_break_mode"), &CaretWordBehavior::get_remove_left_newline_break_mode);
+	ClassDB::bind_method(D_METHOD("set_remove_left_newline_break_flags", "break_flags"), &CaretWordBehavior::set_remove_left_newline_break_flags);
+	ClassDB::bind_method(D_METHOD("get_remove_left_newline_break_flags"), &CaretWordBehavior::get_remove_left_newline_break_flags);
 	ClassDB::bind_method(D_METHOD("set_remove_left_newline_jump_flags", "jump_flags"), &CaretWordBehavior::set_remove_left_newline_jump_flags);
 	ClassDB::bind_method(D_METHOD("get_remove_left_newline_jump_flags"), &CaretWordBehavior::get_remove_left_newline_jump_flags);
 
-	ClassDB::bind_method(D_METHOD("set_remove_right_normal_break_mode", "break_mode"), &CaretWordBehavior::set_remove_right_normal_break_mode);
-	ClassDB::bind_method(D_METHOD("get_remove_right_normal_break_mode"), &CaretWordBehavior::get_remove_right_normal_break_mode);
+	ClassDB::bind_method(D_METHOD("set_remove_right_normal_break_flags", "break_flags"), &CaretWordBehavior::set_remove_right_normal_break_flags);
+	ClassDB::bind_method(D_METHOD("get_remove_right_normal_break_flags"), &CaretWordBehavior::get_remove_right_normal_break_flags);
 	ClassDB::bind_method(D_METHOD("set_remove_right_normal_jump_flags", "jump_flags"), &CaretWordBehavior::set_remove_right_normal_jump_flags);
 	ClassDB::bind_method(D_METHOD("get_remove_right_normal_jump_flags"), &CaretWordBehavior::get_remove_right_normal_jump_flags);
 	ClassDB::bind_method(D_METHOD("set_remove_right_newline_mode", "newline_mode"), &CaretWordBehavior::set_remove_right_newline_mode);
 	ClassDB::bind_method(D_METHOD("get_remove_right_newline_mode"), &CaretWordBehavior::get_remove_right_newline_mode);
-	ClassDB::bind_method(D_METHOD("set_remove_right_newline_break_mode", "break_mode"), &CaretWordBehavior::set_remove_right_newline_break_mode);
-	ClassDB::bind_method(D_METHOD("get_remove_right_newline_break_mode"), &CaretWordBehavior::get_remove_right_newline_break_mode);
+	ClassDB::bind_method(D_METHOD("set_remove_right_newline_break_flags", "break_flags"), &CaretWordBehavior::set_remove_right_newline_break_flags);
+	ClassDB::bind_method(D_METHOD("get_remove_right_newline_break_flags"), &CaretWordBehavior::get_remove_right_newline_break_flags);
 	ClassDB::bind_method(D_METHOD("set_remove_right_newline_jump_flags", "jump_flags"), &CaretWordBehavior::set_remove_right_newline_jump_flags);
 	ClassDB::bind_method(D_METHOD("get_remove_right_newline_jump_flags"), &CaretWordBehavior::get_remove_right_newline_jump_flags);
-
-	const char *preset_hint = "Godot,VSCode,Custom";
-	const char *break_mode_hint = "Word,Word and Punctuation,Word or Punctuation";
-	const char *jump_flag_hint = "Single Whitespace,Whitespace,Single Punctuation";
-	const char *newline_mode_hint = "Never,On Whitespace,Always";
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "preset", PROPERTY_HINT_ENUM, preset_hint), "set_preset", "get_preset");
 	ADD_GROUP("Move Left Behavior", "move_left_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_left_preset", PROPERTY_HINT_ENUM, preset_hint), "set_move_left_preset", "get_move_left_preset");
 	ADD_SUBGROUP("Normal Behavior", "move_left_normal_");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_left_normal_break_mode", PROPERTY_HINT_ENUM, break_mode_hint), "set_move_left_normal_break_mode", "get_move_left_normal_break_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_left_normal_break_flags", PROPERTY_HINT_FLAGS, break_flag_hint), "set_move_left_normal_break_flags", "get_move_left_normal_break_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_left_normal_jump_flags", PROPERTY_HINT_FLAGS, jump_flag_hint), "set_move_left_normal_jump_flags", "get_move_left_normal_jump_flags");
 	ADD_SUBGROUP("Newline Behavior", "move_left_newline_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_left_newline_mode", PROPERTY_HINT_ENUM, newline_mode_hint), "set_move_left_newline_mode", "get_move_left_newline_mode");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_left_newline_break_mode", PROPERTY_HINT_ENUM, break_mode_hint), "set_move_left_newline_break_mode", "get_move_left_newline_break_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_left_newline_break_flags", PROPERTY_HINT_FLAGS, break_flag_hint), "set_move_left_newline_break_flags", "get_move_left_newline_break_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_left_newline_jump_flags", PROPERTY_HINT_FLAGS, jump_flag_hint), "set_move_left_newline_jump_flags", "get_move_left_newline_jump_flags");
 
 	ADD_GROUP("Move Right Behavior", "move_right_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_right_preset", PROPERTY_HINT_ENUM, preset_hint), "set_move_right_preset", "get_move_right_preset");
 	ADD_SUBGROUP("Normal Behavior", "move_right_normal_");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_right_normal_break_mode", PROPERTY_HINT_ENUM, break_mode_hint), "set_move_right_normal_break_mode", "get_move_right_normal_break_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_right_normal_break_flags", PROPERTY_HINT_FLAGS, break_flag_hint), "set_move_right_normal_break_flags", "get_move_right_normal_break_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_right_normal_jump_flags", PROPERTY_HINT_FLAGS, jump_flag_hint), "set_move_right_normal_jump_flags", "get_move_right_normal_jump_flags");
 	ADD_SUBGROUP("Newline Behavior", "move_right_newline_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_right_newline_mode", PROPERTY_HINT_ENUM, newline_mode_hint), "set_move_right_newline_mode", "get_move_right_newline_mode");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_right_newline_break_mode", PROPERTY_HINT_ENUM, break_mode_hint), "set_move_right_newline_break_mode", "get_move_right_newline_break_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_right_newline_break_flags", PROPERTY_HINT_FLAGS, break_flag_hint), "set_move_right_newline_break_flags", "get_move_right_newline_break_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "move_right_newline_jump_flags", PROPERTY_HINT_FLAGS, jump_flag_hint), "set_move_right_newline_jump_flags", "get_move_right_newline_jump_flags");
 
 	ADD_GROUP("Remove Left Behavior", "remove_left_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_left_preset", PROPERTY_HINT_ENUM, preset_hint), "set_remove_left_preset", "get_remove_left_preset");
 	ADD_SUBGROUP("Normal Behavior", "remove_left_normal_");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_left_normal_break_mode", PROPERTY_HINT_ENUM, break_mode_hint), "set_remove_left_normal_break_mode", "get_remove_left_normal_break_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_left_normal_break_flags", PROPERTY_HINT_FLAGS, break_flag_hint), "set_remove_left_normal_break_flags", "get_remove_left_normal_break_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_left_normal_jump_flags", PROPERTY_HINT_FLAGS, jump_flag_hint), "set_remove_left_normal_jump_flags", "get_remove_left_normal_jump_flags");
 	ADD_SUBGROUP("Newline Behavior", "remove_left_newline_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_left_newline_mode", PROPERTY_HINT_ENUM, newline_mode_hint), "set_remove_left_newline_mode", "get_remove_left_newline_mode");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_left_newline_break_mode", PROPERTY_HINT_ENUM, break_mode_hint), "set_remove_left_newline_break_mode", "get_remove_left_newline_break_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_left_newline_break_flags", PROPERTY_HINT_FLAGS, break_flag_hint), "set_remove_left_newline_break_flags", "get_remove_left_newline_break_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_left_newline_jump_flags", PROPERTY_HINT_FLAGS, jump_flag_hint), "set_remove_left_newline_jump_flags", "get_remove_left_newline_jump_flags");
 
 	ADD_GROUP("Remove Right Behavior", "remove_right_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_right_preset", PROPERTY_HINT_ENUM, preset_hint), "set_remove_right_preset", "get_remove_right_preset");
 	ADD_SUBGROUP("Normal Behavior", "remove_right_normal_");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_right_normal_break_mode", PROPERTY_HINT_ENUM, break_mode_hint), "set_remove_right_normal_break_mode", "get_remove_right_normal_break_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_right_normal_break_flags", PROPERTY_HINT_FLAGS, break_flag_hint), "set_remove_right_normal_break_flags", "get_remove_right_normal_break_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_right_normal_jump_flags", PROPERTY_HINT_FLAGS, jump_flag_hint), "set_remove_right_normal_jump_flags", "get_remove_right_normal_jump_flags");
 	ADD_SUBGROUP("Newline Behavior", "remove_right_newline_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_right_newline_mode", PROPERTY_HINT_ENUM, newline_mode_hint), "set_remove_right_newline_mode", "get_remove_right_newline_mode");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_right_newline_break_mode", PROPERTY_HINT_ENUM, break_mode_hint), "set_remove_right_newline_break_mode", "get_remove_right_newline_break_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_right_newline_break_flags", PROPERTY_HINT_FLAGS, break_flag_hint), "set_remove_right_newline_break_flags", "get_remove_right_newline_break_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "remove_right_newline_jump_flags", PROPERTY_HINT_FLAGS, jump_flag_hint), "set_remove_right_newline_jump_flags", "get_remove_right_newline_jump_flags");
-
 
 	ADD_LINKED_PROPERTY("preset", "move_left_preset");
 	ADD_LINKED_PROPERTY("preset", "move_right_preset");
@@ -354,28 +613,28 @@ void CaretWordBehavior::_bind_methods() {
 	ADD_LINKED_PROPERTY("preset", property); \
 	ADD_LINKED_PROPERTY(category_preset, property);
 
-	ADD_PRESET_LINK("move_left_preset", "move_left_normal_break_mode");
+	ADD_PRESET_LINK("move_left_preset", "move_left_normal_break_flags");
 	ADD_PRESET_LINK("move_left_preset", "move_left_normal_jump_flags");
 	ADD_PRESET_LINK("move_left_preset", "move_left_newline_mode");
-	ADD_PRESET_LINK("move_left_preset", "move_left_newline_break_mode");
+	ADD_PRESET_LINK("move_left_preset", "move_left_newline_break_flags");
 	ADD_PRESET_LINK("move_left_preset", "move_left_newline_jump_flags");
 
-	ADD_PRESET_LINK("move_right_preset", "move_right_normal_break_mode");
+	ADD_PRESET_LINK("move_right_preset", "move_right_normal_break_flags");
 	ADD_PRESET_LINK("move_right_preset", "move_right_normal_jump_flags");
 	ADD_PRESET_LINK("move_right_preset", "move_right_newline_mode");
-	ADD_PRESET_LINK("move_right_preset", "move_right_newline_break_mode");
+	ADD_PRESET_LINK("move_right_preset", "move_right_newline_break_flags");
 	ADD_PRESET_LINK("move_right_preset", "move_right_newline_jump_flags");
 
-	ADD_PRESET_LINK("remove_left_preset", "remove_left_normal_break_mode");
+	ADD_PRESET_LINK("remove_left_preset", "remove_left_normal_break_flags");
 	ADD_PRESET_LINK("remove_left_preset", "remove_left_normal_jump_flags");
 	ADD_PRESET_LINK("remove_left_preset", "remove_left_newline_mode");
-	ADD_PRESET_LINK("remove_left_preset", "remove_left_newline_break_mode");
+	ADD_PRESET_LINK("remove_left_preset", "remove_left_newline_break_flags");
 	ADD_PRESET_LINK("remove_left_preset", "remove_left_newline_jump_flags");
 
-	ADD_PRESET_LINK("remove_right_preset", "remove_right_normal_break_mode");
+	ADD_PRESET_LINK("remove_right_preset", "remove_right_normal_break_flags");
 	ADD_PRESET_LINK("remove_right_preset", "remove_right_normal_jump_flags");
 	ADD_PRESET_LINK("remove_right_preset", "remove_right_newline_mode");
-	ADD_PRESET_LINK("remove_right_preset", "remove_right_newline_break_mode");
+	ADD_PRESET_LINK("remove_right_preset", "remove_right_newline_break_flags");
 	ADD_PRESET_LINK("remove_right_preset", "remove_right_newline_jump_flags");
 
 #undef ADD_PRESET_LINK
@@ -462,11 +721,11 @@ CaretWordBehavior::Preset CaretWordBehavior::get_remove_right_preset() const {
 	return PRESET_CUSTOM;
 }
 
-void CaretWordBehavior::set_move_left_normal_break_mode(BreakMode p_break_mode) {
-	behavior.move_left.normal_behavior.break_mode = p_break_mode;
+void CaretWordBehavior::set_move_left_normal_break_flags(uint32_t p_break_flags) {
+	behavior.move_left.normal_behavior.break_flags = p_break_flags;
 }
-CaretWordBehavior::BreakMode CaretWordBehavior::get_move_left_normal_break_mode() const {
-	return behavior.move_left.normal_behavior.break_mode;
+uint32_t CaretWordBehavior::get_move_left_normal_break_flags() const {
+	return behavior.move_left.normal_behavior.break_flags;
 }
 void CaretWordBehavior::set_move_left_normal_jump_flags(uint32_t p_jump_flags) {
 	behavior.move_left.normal_behavior.jump_flags = p_jump_flags;
@@ -480,11 +739,11 @@ void CaretWordBehavior::set_move_left_newline_mode(NewlineMode p_newline_mode) {
 CaretWordBehavior::NewlineMode CaretWordBehavior::get_move_left_newline_mode() const {
 	return behavior.move_left.newline_mode;
 }
-void CaretWordBehavior::set_move_left_newline_break_mode(BreakMode p_break_mode) {
-	behavior.move_left.newline_behavior.break_mode = p_break_mode;
+void CaretWordBehavior::set_move_left_newline_break_flags(uint32_t p_break_flags) {
+	behavior.move_left.newline_behavior.break_flags = p_break_flags;
 }
-CaretWordBehavior::BreakMode CaretWordBehavior::get_move_left_newline_break_mode() const {
-	return behavior.move_left.newline_behavior.break_mode;
+uint32_t CaretWordBehavior::get_move_left_newline_break_flags() const {
+	return behavior.move_left.newline_behavior.break_flags;
 }
 void CaretWordBehavior::set_move_left_newline_jump_flags(uint32_t p_jump_flags) {
 	behavior.move_left.newline_behavior.jump_flags = p_jump_flags;
@@ -493,11 +752,11 @@ uint32_t CaretWordBehavior::get_move_left_newline_jump_flags() const {
 	return behavior.move_left.newline_behavior.jump_flags;
 }
 
-void CaretWordBehavior::set_move_right_normal_break_mode(BreakMode p_break_mode) {
-	behavior.move_right.normal_behavior.break_mode = p_break_mode;
+void CaretWordBehavior::set_move_right_normal_break_flags(uint32_t p_break_flags) {
+	behavior.move_right.normal_behavior.break_flags = p_break_flags;
 }
-CaretWordBehavior::BreakMode CaretWordBehavior::get_move_right_normal_break_mode() const {
-	return behavior.move_right.normal_behavior.break_mode;
+uint32_t CaretWordBehavior::get_move_right_normal_break_flags() const {
+	return behavior.move_right.normal_behavior.break_flags;
 }
 void CaretWordBehavior::set_move_right_normal_jump_flags(uint32_t p_jump_flags) {
 	behavior.move_right.normal_behavior.jump_flags = p_jump_flags;
@@ -511,11 +770,11 @@ void CaretWordBehavior::set_move_right_newline_mode(NewlineMode p_newline_mode) 
 CaretWordBehavior::NewlineMode CaretWordBehavior::get_move_right_newline_mode() const {
 	return behavior.move_right.newline_mode;
 }
-void CaretWordBehavior::set_move_right_newline_break_mode(BreakMode p_break_mode) {
-	behavior.move_right.newline_behavior.break_mode = p_break_mode;
+void CaretWordBehavior::set_move_right_newline_break_flags(uint32_t p_break_flags) {
+	behavior.move_right.newline_behavior.break_flags = p_break_flags;
 }
-CaretWordBehavior::BreakMode CaretWordBehavior::get_move_right_newline_break_mode() const {
-	return behavior.move_right.newline_behavior.break_mode;
+uint32_t CaretWordBehavior::get_move_right_newline_break_flags() const {
+	return behavior.move_right.newline_behavior.break_flags;
 }
 void CaretWordBehavior::set_move_right_newline_jump_flags(uint32_t p_jump_flags) {
 	behavior.move_right.newline_behavior.jump_flags = p_jump_flags;
@@ -524,11 +783,11 @@ uint32_t CaretWordBehavior::get_move_right_newline_jump_flags() const {
 	return behavior.move_right.newline_behavior.jump_flags;
 }
 
-void CaretWordBehavior::set_remove_left_normal_break_mode(BreakMode p_break_mode) {
-	behavior.remove_left.normal_behavior.break_mode = p_break_mode;
+void CaretWordBehavior::set_remove_left_normal_break_flags(uint32_t p_break_flags) {
+	behavior.remove_left.normal_behavior.break_flags = p_break_flags;
 }
-CaretWordBehavior::BreakMode CaretWordBehavior::get_remove_left_normal_break_mode() const {
-	return behavior.remove_left.normal_behavior.break_mode;
+uint32_t CaretWordBehavior::get_remove_left_normal_break_flags() const {
+	return behavior.remove_left.normal_behavior.break_flags;
 }
 void CaretWordBehavior::set_remove_left_normal_jump_flags(uint32_t p_jump_flags) {
 	behavior.remove_left.normal_behavior.jump_flags = p_jump_flags;
@@ -542,11 +801,11 @@ void CaretWordBehavior::set_remove_left_newline_mode(NewlineMode p_newline_mode)
 CaretWordBehavior::NewlineMode CaretWordBehavior::get_remove_left_newline_mode() const {
 	return behavior.remove_left.newline_mode;
 }
-void CaretWordBehavior::set_remove_left_newline_break_mode(BreakMode p_break_mode) {
-	behavior.remove_left.newline_behavior.break_mode = p_break_mode;
+void CaretWordBehavior::set_remove_left_newline_break_flags(uint32_t p_break_flags) {
+	behavior.remove_left.newline_behavior.break_flags = p_break_flags;
 }
-CaretWordBehavior::BreakMode CaretWordBehavior::get_remove_left_newline_break_mode() const {
-	return behavior.remove_left.newline_behavior.break_mode;
+uint32_t CaretWordBehavior::get_remove_left_newline_break_flags() const {
+	return behavior.remove_left.newline_behavior.break_flags;
 }
 void CaretWordBehavior::set_remove_left_newline_jump_flags(uint32_t p_jump_flags) {
 	behavior.remove_left.newline_behavior.jump_flags = p_jump_flags;
@@ -555,11 +814,11 @@ uint32_t CaretWordBehavior::get_remove_left_newline_jump_flags() const {
 	return behavior.remove_left.newline_behavior.jump_flags;
 }
 
-void CaretWordBehavior::set_remove_right_normal_break_mode(BreakMode p_break_mode) {
-	behavior.remove_right.normal_behavior.break_mode = p_break_mode;
+void CaretWordBehavior::set_remove_right_normal_break_flags(uint32_t p_break_flags) {
+	behavior.remove_right.normal_behavior.break_flags = p_break_flags;
 }
-CaretWordBehavior::BreakMode CaretWordBehavior::get_remove_right_normal_break_mode() const {
-	return behavior.remove_right.normal_behavior.break_mode;
+uint32_t CaretWordBehavior::get_remove_right_normal_break_flags() const {
+	return behavior.remove_right.normal_behavior.break_flags;
 }
 void CaretWordBehavior::set_remove_right_normal_jump_flags(uint32_t p_jump_flags) {
 	behavior.remove_right.normal_behavior.jump_flags = p_jump_flags;
@@ -573,11 +832,11 @@ void CaretWordBehavior::set_remove_right_newline_mode(NewlineMode p_newline_mode
 CaretWordBehavior::NewlineMode CaretWordBehavior::get_remove_right_newline_mode() const {
 	return behavior.remove_right.newline_mode;
 }
-void CaretWordBehavior::set_remove_right_newline_break_mode(BreakMode p_break_mode) {
-	behavior.remove_right.newline_behavior.break_mode = p_break_mode;
+void CaretWordBehavior::set_remove_right_newline_break_flags(uint32_t p_break_flags) {
+	behavior.remove_right.newline_behavior.break_flags = p_break_flags;
 }
-CaretWordBehavior::BreakMode CaretWordBehavior::get_remove_right_newline_break_mode() const {
-	return behavior.remove_right.newline_behavior.break_mode;
+uint32_t CaretWordBehavior::get_remove_right_newline_break_flags() const {
+	return behavior.remove_right.newline_behavior.break_flags;
 }
 void CaretWordBehavior::set_remove_right_newline_jump_flags(uint32_t p_jump_flags) {
 	behavior.remove_right.newline_behavior.jump_flags = p_jump_flags;
@@ -587,9 +846,9 @@ uint32_t CaretWordBehavior::get_remove_right_newline_jump_flags() const {
 }
 
 const bool operator==(const CaretWordBehavior::ContextBehavior &a, const CaretWordBehavior::ContextBehavior &b) {
-	return (a.normal_behavior.break_mode == b.normal_behavior.break_mode &&
+	return (a.normal_behavior.break_flags == b.normal_behavior.break_flags &&
 			a.normal_behavior.jump_flags == b.normal_behavior.jump_flags &&
 			a.newline_mode == b.newline_mode &&
-			a.newline_behavior.break_mode == b.newline_behavior.break_mode &&
+			a.newline_behavior.break_flags == b.newline_behavior.break_flags &&
 			a.newline_behavior.jump_flags == b.newline_behavior.jump_flags);
 }

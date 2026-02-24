@@ -1163,34 +1163,34 @@ void CodeTextEditor::update_editor_settings() {
 		}
 
 		// Move left.
-		text_editor_caret_word_behavior->set_move_left_normal_break_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/normal_break_mode"));
+		text_editor_caret_word_behavior->set_move_left_normal_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/normal_break_flags"));
 		text_editor_caret_word_behavior->set_move_left_normal_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/normal_jump_flags"));
 		text_editor_caret_word_behavior->set_move_left_newline_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/newline_mode"));
-		text_editor_caret_word_behavior->set_move_left_newline_break_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/newline_break_mode"));
+		text_editor_caret_word_behavior->set_move_left_newline_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/newline_break_flags"));
 		text_editor_caret_word_behavior->set_move_left_newline_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_left/newline_jump_flags"));
 		text_editor_caret_word_behavior->set_move_left_preset(EDITOR_GET("text_editor/behavior/caret_word_behavior/presets/move_left"));
 
 		// Move right.
-		text_editor_caret_word_behavior->set_move_right_normal_break_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/normal_break_mode"));
+		text_editor_caret_word_behavior->set_move_right_normal_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/normal_break_flags"));
 		text_editor_caret_word_behavior->set_move_right_normal_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/normal_jump_flags"));
 		text_editor_caret_word_behavior->set_move_right_newline_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/newline_mode"));
-		text_editor_caret_word_behavior->set_move_right_newline_break_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/newline_break_mode"));
+		text_editor_caret_word_behavior->set_move_right_newline_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/newline_break_flags"));
 		text_editor_caret_word_behavior->set_move_right_newline_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/move_right/newline_jump_flags"));
 		text_editor_caret_word_behavior->set_move_right_preset(EDITOR_GET("text_editor/behavior/caret_word_behavior/presets/move_right"));
 
 		// Remove left.
-		text_editor_caret_word_behavior->set_remove_left_normal_break_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/normal_break_mode"));
+		text_editor_caret_word_behavior->set_remove_left_normal_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/normal_break_flags"));
 		text_editor_caret_word_behavior->set_remove_left_normal_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/normal_jump_flags"));
 		text_editor_caret_word_behavior->set_remove_left_newline_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/newline_mode"));
-		text_editor_caret_word_behavior->set_remove_left_newline_break_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/newline_break_mode"));
+		text_editor_caret_word_behavior->set_remove_left_newline_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/newline_break_flags"));
 		text_editor_caret_word_behavior->set_remove_left_newline_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_left/newline_jump_flags"));
 		text_editor_caret_word_behavior->set_remove_left_preset(EDITOR_GET("text_editor/behavior/caret_word_behavior/presets/remove_left"));
 
 		// Remove right.
-		text_editor_caret_word_behavior->set_remove_right_normal_break_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/normal_break_mode"));
+		text_editor_caret_word_behavior->set_remove_right_normal_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/normal_break_flags"));
 		text_editor_caret_word_behavior->set_remove_right_normal_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/normal_jump_flags"));
 		text_editor_caret_word_behavior->set_remove_right_newline_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/newline_mode"));
-		text_editor_caret_word_behavior->set_remove_right_newline_break_mode(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/newline_break_mode"));
+		text_editor_caret_word_behavior->set_remove_right_newline_break_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/newline_break_flags"));
 		text_editor_caret_word_behavior->set_remove_right_newline_jump_flags(EDITOR_GET("text_editor/behavior/caret_word_behavior/custom/remove_right/newline_jump_flags"));
 		text_editor_caret_word_behavior->set_remove_right_preset(EDITOR_GET("text_editor/behavior/caret_word_behavior/presets/remove_right"));
 
