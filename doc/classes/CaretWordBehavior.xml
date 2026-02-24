@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CaretWordBehavior" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+		Behavior of a caret when moving by words.
+	</brief_description>
+	<description>
+		A resource for determining the caret behavior when moving by words. It allows configuration of how words, punctuation, brackets, and whitespace are broken down and used when moving between words.
+		It is intended for use with [TextEdit] and [CodeEdit] but also has use in the [EditorSettings] to configure Godot Editor's script editor itself.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_next_word_caret_left" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="caret_word_behavior" type="CaretWordBehavior" />
+			<param index="1" name="text_shaped" type="RID" />
+			<param index="2" name="start_column" type="int" />
+			<param index="3" name="is_newline" type="bool" />
+			<param index="4" name="is_remove" type="bool" />
+			<description>
+				Gets the next caret location to the left from the index [param start_column] in [param text_shaped] based on [param caret_word_behavior]. This also accounts for the flags [param is_newline] and [param is_remove].
+			</description>
+		</method>
+		<method name="get_next_word_caret_right" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="caret_word_behavior" type="CaretWordBehavior" />
+			<param index="1" name="text_shaped" type="RID" />
+			<param index="2" name="start_column" type="int" />
+			<param index="3" name="is_newline" type="bool" />
+			<param index="4" name="is_remove" type="bool" />
+			<description>
+				Gets the next caret location to the right from the index [param start_column] in [param text_shaped] based on [param caret_word_behavior]. This also accounts for the flags [param is_newline] and [param is_remove].
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="move_left_newline_break_flags" type="int" setter="set_move_left_newline_break_flags" getter="get_move_left_newline_break_flags" default="0">
+			The break flags to use when moving the caret to the next word found to the left when on a newline.
+		</member>
+		<member name="move_left_newline_jump_flags" type="int" setter="set_move_left_newline_jump_flags" getter="get_move_left_newline_jump_flags" default="0">
+			The jump flags to use when moving the caret to the next word found to the left when on a newline.
+		</member>
+		<member name="move_left_newline_mode" type="int" setter="set_move_left_newline_mode" getter="get_move_left_newline_mode" enum="CaretWordBehavior.NewlineMode" default="0">
+			The newline mode to use when moving the caret to the next word found to the left on a newline.
+		</member>
+		<member name="move_left_normal_break_flags" type="int" setter="set_move_left_normal_break_flags" getter="get_move_left_normal_break_flags" default="0">
+			The break flags to use when moving the caret to the next word found to the left.
+		</member>
+		<member name="move_left_normal_jump_flags" type="int" setter="set_move_left_normal_jump_flags" getter="get_move_left_normal_jump_flags" default="2">
+			The jump flags to use when moving the caret to the next word found to the left.
+		</member>
+		<member name="move_left_preset" type="int" setter="set_move_left_preset" getter="get_move_left_preset" enum="CaretWordBehavior.Preset" default="0">
+			The preset used when moving the caret to the next word found to the left.
+		</member>
+		<member name="move_right_newline_break_flags" type="int" setter="set_move_right_newline_break_flags" getter="get_move_right_newline_break_flags" default="0">
+			The break flags to use when moving the caret to the next word found to the right when on a newline.
+		</member>
+		<member name="move_right_newline_jump_flags" type="int" setter="set_move_right_newline_jump_flags" getter="get_move_right_newline_jump_flags" default="0">
+			The jump flags to use when moving the caret to the next word found to the right when on a newline.
+		</member>
+		<member name="move_right_newline_mode" type="int" setter="set_move_right_newline_mode" getter="get_move_right_newline_mode" enum="CaretWordBehavior.NewlineMode" default="0">
+			The newline mode to use when moving the caret to the next word found to the right on a newline.
+		</member>
+		<member name="move_right_normal_break_flags" type="int" setter="set_move_right_normal_break_flags" getter="get_move_right_normal_break_flags" default="0">
+			The break flags to use when moving the caret to the next word found to the right.
+		</member>
+		<member name="move_right_normal_jump_flags" type="int" setter="set_move_right_normal_jump_flags" getter="get_move_right_normal_jump_flags" default="2">
+			The jump flags to use when moving the caret to the next word found to the right.
+		</member>
+		<member name="move_right_preset" type="int" setter="set_move_right_preset" getter="get_move_right_preset" enum="CaretWordBehavior.Preset" default="0">
+			The preset used when moving the caret to the next word found to the right.
+		</member>
+		<member name="preset" type="int" setter="set_preset" getter="get_preset" enum="CaretWordBehavior.Preset" default="0">
+			The preset used for the all caret word behavior.
+		</member>
+		<member name="remove_left_newline_break_flags" type="int" setter="set_remove_left_newline_break_flags" getter="get_remove_left_newline_break_flags" default="0">
+			The break flags to use for the removal of words to the left when on a newline.
+		</member>
+		<member name="remove_left_newline_jump_flags" type="int" setter="set_remove_left_newline_jump_flags" getter="get_remove_left_newline_jump_flags" default="0">
+			The jump flags to use for the removal of words to the left when on a newline.
+		</member>
+		<member name="remove_left_newline_mode" type="int" setter="set_remove_left_newline_mode" getter="get_remove_left_newline_mode" enum="CaretWordBehavior.NewlineMode" default="0">
+			The newline mode to use for the removal of words to the left on a newline.
+		</member>
+		<member name="remove_left_normal_break_flags" type="int" setter="set_remove_left_normal_break_flags" getter="get_remove_left_normal_break_flags" default="0">
+			The break flags to use for the removal of words to the left.
+		</member>
+		<member name="remove_left_normal_jump_flags" type="int" setter="set_remove_left_normal_jump_flags" getter="get_remove_left_normal_jump_flags" default="2">
+			The jump flags to use for the removal of words to the left.
+		</member>
+		<member name="remove_left_preset" type="int" setter="set_remove_left_preset" getter="get_remove_left_preset" enum="CaretWordBehavior.Preset" default="0">
+			The preset used for the removal of words to the left.
+		</member>
+		<member name="remove_right_newline_break_flags" type="int" setter="set_remove_right_newline_break_flags" getter="get_remove_right_newline_break_flags" default="0">
+			The break flags to use for the removal of words to the right when on a newline.
+		</member>
+		<member name="remove_right_newline_jump_flags" type="int" setter="set_remove_right_newline_jump_flags" getter="get_remove_right_newline_jump_flags" default="0">
+			The jump flags to use for the removal of words to the right when on a newline.
+		</member>
+		<member name="remove_right_newline_mode" type="int" setter="set_remove_right_newline_mode" getter="get_remove_right_newline_mode" enum="CaretWordBehavior.NewlineMode" default="0">
+			The newline mode to use for the removal of words to the right on a newline.
+		</member>
+		<member name="remove_right_normal_break_flags" type="int" setter="set_remove_right_normal_break_flags" getter="get_remove_right_normal_break_flags" default="0">
+			The break flags to use for the removal of words to the right.
+		</member>
+		<member name="remove_right_normal_jump_flags" type="int" setter="set_remove_right_normal_jump_flags" getter="get_remove_right_normal_jump_flags" default="2">
+			The jump flags to use for the removal of words to the right.
+		</member>
+		<member name="remove_right_preset" type="int" setter="set_remove_right_preset" getter="get_remove_right_preset" enum="CaretWordBehavior.Preset" default="0">
+			The preset used for the removal of words to the right.
+		</member>
+	</members>
+	<constants>
+		<constant name="PRESET_GODOT" value="0" enum="Preset">
+			Godot's default behavior.
+		</constant>
+		<constant name="PRESET_VSCODE" value="1" enum="Preset">
+			Preset behavior based on VSCode.
+		</constant>
+		<constant name="PRESET_VISUAL_STUDIO" value="2" enum="Preset">
+			Preset behavior based on Visual Studio.
+		</constant>
+		<constant name="PRESET_ATOM" value="3" enum="Preset">
+			Preset behavior based on Atom.
+		</constant>
+		<constant name="PRESET_SUBLIME" value="4" enum="Preset">
+			Preset behavior based on Sublime.
+		</constant>
+		<constant name="PRESET_RIDER" value="5" enum="Preset">
+			Preset behavior based on Rider.
+		</constant>
+		<constant name="PRESET_GEANY" value="6" enum="Preset">
+			Preset behavior based on Geany.
+		</constant>
+		<constant name="PRESET_KATE" value="7" enum="Preset">
+			Preset behavior based on Kate.
+		</constant>
+		<constant name="PRESET_CUSTOM" value="8" enum="Preset">
+			Custom behavior specified by the user.
+		</constant>
+		<constant name="BREAK_FLAG_WORDS" value="0" enum="BreakFlags">
+			Breaks are set around contiguous words. Words are considered their own token, separate from whitespace.
+			[b]Note:[/b] Digits are included as 'words'.
+			[b]Note:[/b] Non-word characters are considered whitespace by default.
+
+			For example:
+			[code]example		whitespace and "a string".[/code]
+			will become:
+			[code]|example|		|whitespace| |and| "|a| |string|".|[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="BREAK_FLAG_WORD_PASCAL" value="1" enum="BreakFlags">
+			Breaks are set around contiguous words as well as at the beginning of capital words.
+
+			For example:
+			[code]var ExampleVariableName : int = 1
+			var example_variable_name : int = 1[/code]
+			will become:
+			[code]|var| |Example|Variable|Name| : |int| = |1|
+			|var| |example_variable_name| : |int| = |1|[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="BREAK_FLAG_WORD_SNAKE" value="2" enum="BreakFlags">
+			Breaks are set around contiguous words as well at the end of underscores within words.
+
+			For example:
+			[code]var ExampleVariableName : int = 1
+			var example_variable_name : int = 1[/code]
+			will become:
+			[code]|var| |ExampleVariableName| : |int| = |1|
+			|var| |example_|variable_|name| : |int| = |1|[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="BREAK_FLAG_PUNCTUATION_AS_WORD" value="4" enum="BreakFlags">
+			Punctuation is considered as words. Breaks are set around contiguous words and punctuation.
+
+			For example:
+			[code]example		whitespace and "a string".
+			func _process(delta : float) &gt; void:[/code]
+			will become:
+			[code]|example|		|whitespace| |and| |"a| |string".|
+			|func| |_process(delta| |:| |float)| |&gt;| |void:|[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="BREAK_FLAG_SINGLE_PUNCTUATION" value="8" enum="BreakFlags">
+			Breaks are set around every instance of punctuation individually.
+
+			For example:
+			[code]example		whitespace and "a string".
+			func _process(delta : float) &gt; void:[/code]
+			will become:
+			[code]|example|		|whitespace| |and| |"|a| |string|"|.|
+			|func| |_process|(|delta| |:| |float|)| |-|&gt;| |void|:|[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="BREAK_FLAG_SEPARATE_PUNCTUATION" value="16" enum="BreakFlags">
+			Punctuation is considered as a separate token. Breaks are set around contiguous punctuation.
+
+			For example:
+			[code]example		whitespace and "a string".
+			func _process(delta : float) &gt; void:[/code]
+			will become:
+			[code]|example|		|whitespace| |and| |"|a| |string|".|
+			|func| |_process|(|delta| |:| |float|)| |&gt;| |void|:|[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="BREAK_FLAG_SINGLE_BRACKET" value="32" enum="BreakFlags">
+			Breaks are set around every instance of a bracket token.
+
+			For example:
+			[code]  ({}) {}word
+			func _process(delta : float) &gt; void:[/code]
+			will become:
+			[code]|  |(|{|}|)| |{|}|word|
+			|func| |_process|(|delta| : |float|)| &gt; |void|:|[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="BREAK_FLAG_SEPARATE_BRACKET" value="64" enum="BreakFlags">
+			Brackets are considered as a separate token. Breaks are set around contiguous brackets.
+
+			For example:
+			[code]  ({}) {}word
+			func _process(delta : float) &gt; void:[/code]
+			will become:
+			[code]|  |({})| |{}|word|
+			|func| |_process|(|delta| : |float|)| &gt; |void|:|[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="BREAK_FLAG_DIRECTIONAL_BRACKETS" value="128" enum="BreakFlags">
+			Bracket tokens will only have breaks if moving out of them.
+
+			For example:
+			[code]  ({--}) {--}word
+			func _process(delta : float) -&gt; void:[/code]
+			when operating 'right' will become:
+			[code]|  ({--|}|)| {--|}|word|
+			|func| |_process(|delta| : |float|)| -&gt; |void|:|[/code]
+			when operating 'left' will become:
+			[code]|  |(|{|--}) |{|--}|word|
+			|func| |_process|(|delta| : |float|)| -&gt; |void|:|[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="BREAK_FLAG_STRINGS" value="256" enum="BreakFlags">
+			Breaks are set on the edges of contiguous string characters. This includes: [code]"[/code].
+
+			For example:
+			[code]  "example string" and this: """""""""  [/code]
+			will become:
+			[code]|  |"|example| |string|"| |and| |this|: |"|"""""""|"|  |[/code]
+			where the [code]|[/code] denotes a break.
+		</constant>
+		<constant name="JUMP_FLAG_NONE" value="0" enum="JumpFlags">
+			No jump behavior.
+
+			An example with carets denoted with [code]@[/code] and breaks denoted [code]|[/code]:
+			[code]|Single@ |Whitespace|
+			|Double@  |Whitespace|[/code]
+			Move right operation:
+			[code]|Single @Whitespace|
+			|Double  @Whitespace|[/code]
+		</constant>
+		<constant name="JUMP_FLAG_SINGLE_WHITESPACE" value="1" enum="JumpFlags">
+			A single initial whitespace token will be skipped when finding the next caret.
+
+			An example with carets denoted with [code]@[/code] and breaks denoted [code]|[/code]:
+			[code]|Single@ |Whitespace|
+			|Double@  |Whitespace|[/code]
+			Move right operation:
+			[code]|Single| |Whitespace@
+			|Double|  @Whitespace|[/code]
+		</constant>
+		<constant name="JUMP_FLAG_WHITESPACE" value="2" enum="JumpFlags">
+			Any initial contiguous whitespace tokens will be skipped when finding the next caret.
+
+			An example with carets denoted with [code]@[/code] and breaks denoted [code]|[/code]:
+			[code]|Single@ |Whitespace|
+			|Double@  |Whitespace|[/code]
+			Move right operation:
+			[code]|Single| |Whitespace@
+			|Double|  |Whitespace@[/code]
+		</constant>
+		<constant name="JUMP_FLAG_TRAILING_WHITESPACE" value="4" enum="JumpFlags">
+			Any non-initial trailing contiguous whitespace tokens will be skipped when finding the next caret.
+
+			An example with carets denoted with [code]@[/code] and breaks denoted [code]|[/code]:
+			[code]|Trailing| @Whitespace|   |Example|[/code]
+			Move right operation:
+			[code]|Trailing| |Whitespace|   @Example|[/code]
+		</constant>
+		<constant name="JUMP_FLAG_SINGLE_PUNCTUATION" value="8" enum="JumpFlags">
+			A single initial punctuation token will be skipped when finding the next caret.
+			[b]Note:[/b] Requires [constant BREAK_FLAG_SEPARATE_PUNCTUATION] to be set.
+
+			An example with carets denoted with [code]@[/code] and breaks denoted [code]|[/code]:
+			[code]|Punctuation@ |"|As| @Separate|!|?|"|[/code]
+			Move right operation:
+			[code]|Punctuation| @"|As| |Separate@!|?|"|[/code]
+			Move right operation again:
+			[code]|Punctuation| |"@As| |Separate|!@?|"|[/code]
+		</constant>
+		<constant name="JUMP_FLAG_PUNCTUATION" value="16" enum="JumpFlags">
+			Any initial contiguous punctuation tokens will be skipped when finding the next caret.
+			[b]Note:[/b] Requires [constant BREAK_FLAG_SEPARATE_PUNCTUATION] to be set.
+
+			An example with carets denoted with [code]@[/code] and breaks denoted [code]|[/code]:
+			[code]|Punctuation@ |"|As| @Separate|!?"|[/code]
+			Move right operation:
+			[code]|Punctuation| @"|As| |Separate@!?"|[/code]
+			Move right operation again:
+			[code]|Punctuation| |"@As| |Separate|!?"@[/code]
+		</constant>
+		<constant name="NEWLINE_MODE_NEVER" value="0" enum="NewlineMode">
+			When moving onto the newline, no behavior will happen.
+		</constant>
+		<constant name="NEWLINE_MODE_ON_WHITESPACE" value="1" enum="NewlineMode">
+			When moving onto a newline, the respective behavior will only happen when the initial token on the newline is a whitespace.
+		</constant>
+		<constant name="NEWLINE_MODE_ALWAYS" value="2" enum="NewlineMode">
+			When moving onto a newline, the respective behavior will always happen.
+		</constant>
+	</constants>
+</class>

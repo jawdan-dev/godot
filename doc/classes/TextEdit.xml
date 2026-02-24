@@ -1309,6 +1309,9 @@
 		<member name="caret_type" type="int" setter="set_caret_type" getter="get_caret_type" enum="TextEdit.CaretType" default="0">
 			Set the type of caret to draw.
 		</member>
+		<member name="caret_word_behavior" type="CaretWordBehavior" setter="set_caret_word_behavior" getter="get_caret_word_behavior">
+			Behavior used for when moving the caret by word. If left empty, will default to using the fallback CaretWordBehavior.
+		</member>
 		<member name="context_menu_enabled" type="bool" setter="set_context_menu_enabled" getter="is_context_menu_enabled" default="true">
 			If [code]true[/code], a right-click displays the context menu.
 		</member>

@@ -1444,6 +1444,14 @@
 		<member name="text_editor/appearance/whitespace/line_spacing" type="int" setter="" getter="">
 			The space to add between lines (in pixels). Greater line spacing can help improve readability at the cost of displaying fewer lines on screen. Negative values allow for even more compact text, but may look broken with certain fonts.
 		</member>
+		<member name="text_editor/behavior/caret_word_behavior/custom_behavior" type="String" setter="" getter="">
+			The behavior of how the caret moves by words in the script editor.
+			[b]Note:[/b] If this is set with a valid CaretWordBehavior resource path, it will override the settings from [member text_editor/behavior/caret_word_behavior/preset].
+		</member>
+		<member name="text_editor/behavior/caret_word_behavior/preset" type="int" setter="" getter="">
+			Set caret word behavior based on the presets of another existing editor.
+			[b]Note:[/b] Can be ignored if [member text_editor/behavior/caret_word_behavior/custom_behavior] is set.
+		</member>
 		<member name="text_editor/behavior/documentation/enable_tooltips" type="bool" setter="" getter="">
 			If [code]true[/code], documentation tooltips will appear when hovering over a symbol.
 		</member>
