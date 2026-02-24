@@ -123,6 +123,11 @@ private:
 	static PackedInt32Array _get_word_break_carets(RID p_text_shaped, const LineBehavior &p_behavior, int p_direction);
 	static int _get_next_word_caret_directional(RID p_text_shaped, int p_column, bool p_is_newline, const ContextBehavior &p_behavior, int p_direction);
 
+	Preset move_left_last_preset = PRESET_GODOT;
+	Preset move_right_last_preset = PRESET_GODOT;
+	Preset remove_left_last_preset = PRESET_GODOT;
+	Preset remove_right_last_preset = PRESET_GODOT;
+
 protected:
 	static void _bind_methods();
 
@@ -132,15 +137,15 @@ public:
 
 	// Presets.
 	void set_preset(Preset p_preset);
-	Preset get_preset() const;
+	Preset get_preset();
 	void set_move_left_preset(Preset p_preset);
-	Preset get_move_left_preset() const;
+	Preset get_move_left_preset();
 	void set_move_right_preset(Preset p_preset);
-	Preset get_move_right_preset() const;
+	Preset get_move_right_preset();
 	void set_remove_left_preset(Preset p_preset);
-	Preset get_remove_left_preset() const;
+	Preset get_remove_left_preset();
 	void set_remove_right_preset(Preset p_preset);
-	Preset get_remove_right_preset() const;
+	Preset get_remove_right_preset();
 
 	// Move left.
 	void set_move_left_normal_break_flags(uint32_t p_break_flags);

@@ -439,7 +439,7 @@ PackedInt32Array CaretWordBehavior::_get_word_break_carets(RID p_text_shaped, co
 	if (p_behavior.break_flags & BREAK_FLAG_WORD_SNAKE) {
 		for (int i = 0; i < line.length(); i++) {
 			// Break point at end of underscore.
-			if (line[i] == '_' && i + 1 < line.length() && line[i + 1] != '_') {
+			if (is_underscore(line[i]) && i + 1 < line.length() && !is_underscore(line[i + 1])) {
 				breaks.append(i + 1);
 			}
 		}
@@ -531,6 +531,7 @@ void CaretWordBehavior::_bind_methods() {
 	BIND_ENUM_CONSTANT(PRESET_GEANY);
 	BIND_ENUM_CONSTANT(PRESET_KATE);
 	BIND_ENUM_CONSTANT(PRESET_CUSTOM);
+	const char *preset_hint = "Godot,VSCode,Visual Studio,Atom,Sublime,Rider,Geany,Kate,Custom";
 
 	BIND_ENUM_CONSTANT(BREAK_FLAG_WORDS);
 	BIND_ENUM_CONSTANT(BREAK_FLAG_WORD_PASCAL);
@@ -542,6 +543,7 @@ void CaretWordBehavior::_bind_methods() {
 	BIND_ENUM_CONSTANT(BREAK_FLAG_SEPARATE_BRACKET);
 	BIND_ENUM_CONSTANT(BREAK_FLAG_DIRECTIONAL_BRACKETS);
 	BIND_ENUM_CONSTANT(BREAK_FLAG_STRINGS);
+	const char *break_flag_hint = "PascalCase,snake_case,Punctuation as Word,Single Punctuation,Separate Punctuation,Single Bracket,Separate Bracket,Directional Brackets,Strings";
 
 	BIND_ENUM_CONSTANT(JUMP_FLAG_NONE);
 	BIND_ENUM_CONSTANT(JUMP_FLAG_SINGLE_WHITESPACE);
@@ -549,14 +551,11 @@ void CaretWordBehavior::_bind_methods() {
 	BIND_ENUM_CONSTANT(JUMP_FLAG_TRAILING_WHITESPACE);
 	BIND_ENUM_CONSTANT(JUMP_FLAG_SINGLE_PUNCTUATION);
 	BIND_ENUM_CONSTANT(JUMP_FLAG_PUNCTUATION);
+	const char *jump_flag_hint = "Single Whitespace,Whitespace,Trailing Whitespace,Single Punctuation,Punctuation";
 
 	BIND_ENUM_CONSTANT(NEWLINE_MODE_NEVER);
 	BIND_ENUM_CONSTANT(NEWLINE_MODE_ON_WHITESPACE);
 	BIND_ENUM_CONSTANT(NEWLINE_MODE_ALWAYS);
-
-	const char *preset_hint = "Godot,VSCode,Visual Studio,Atom,Sublime,Rider,Geany,Kate,Custom";
-	const char *break_flag_hint = "Words,PascalCase,snake_case,Punctuation as Word,Single Punctuation,Separate Punctuation,Single Bracket,Separate Bracket";
-	const char *jump_flag_hint = "Single Whitespace,Whitespace,Single Punctuation";
 	const char *newline_mode_hint = "Never,On Whitespace,Always";
 
 	ClassDB::bind_static_method("CaretWordBehavior", D_METHOD("get_next_word_caret_left", "caret_word_behavior", "text_shaped", "start_column", "is_newline", "is_remove"), &CaretWordBehavior::get_next_word_caret_left);
@@ -707,12 +706,16 @@ void CaretWordBehavior::set_preset(Preset p_preset) {
 	switch (p_preset) {
 		default: {
 			behavior = _get_preset(p_preset);
+			move_left_last_preset = p_preset;
+			move_right_last_preset = p_preset;
+			remove_left_last_preset = p_preset;
+			remove_right_last_preset = p_preset;
 		} break;
 		case PRESET_CUSTOM:
 			break;
 	}
 }
-CaretWordBehavior::Preset CaretWordBehavior::get_preset() const {
+CaretWordBehavior::Preset CaretWordBehavior::get_preset() {
 	Preset preset = get_move_left_preset();
 	if (get_move_right_preset() == preset && get_remove_left_preset() == preset && get_remove_right_preset() == preset) {
 		return preset;
@@ -721,50 +724,82 @@ CaretWordBehavior::Preset CaretWordBehavior::get_preset() const {
 }
 void CaretWordBehavior::set_move_left_preset(Preset p_preset) {
 	behavior.move_left = _get_preset(p_preset).move_left;
+	move_left_last_preset = p_preset;
 }
-CaretWordBehavior::Preset CaretWordBehavior::get_move_left_preset() const {
+CaretWordBehavior::Preset CaretWordBehavior::get_move_left_preset() {
+	// Check if is expected preset.
+	if (move_left_last_preset != PRESET_CUSTOM && behavior.move_left == _get_preset(move_left_last_preset).move_left) {
+		return move_left_last_preset;
+	}
+	// Find matching preset.
 	for (int i = 0; i < PRESET_CUSTOM; i++) {
 		Preset preset = (Preset)i;
 		if (behavior.move_left == _get_preset(preset).move_left) {
+			move_left_last_preset = preset;
 			return preset;
 		}
 	}
+	// No preset found, must be custom.
 	return PRESET_CUSTOM;
 }
 void CaretWordBehavior::set_move_right_preset(Preset p_preset) {
 	behavior.move_right = _get_preset(p_preset).move_right;
+	move_right_last_preset = p_preset;
 }
-CaretWordBehavior::Preset CaretWordBehavior::get_move_right_preset() const {
+CaretWordBehavior::Preset CaretWordBehavior::get_move_right_preset() {
+	// Check if is expected preset.
+	if (move_right_last_preset != PRESET_CUSTOM && behavior.move_right == _get_preset(move_right_last_preset).move_right) {
+		return move_right_last_preset;
+	}
+	// Find matching preset.
 	for (int i = 0; i < PRESET_CUSTOM; i++) {
 		Preset preset = (Preset)i;
 		if (behavior.move_right == _get_preset(preset).move_right) {
+			move_right_last_preset = preset;
 			return preset;
 		}
 	}
+	// No preset found, must be custom.
 	return PRESET_CUSTOM;
 }
 void CaretWordBehavior::set_remove_left_preset(Preset p_preset) {
 	behavior.remove_left = _get_preset(p_preset).remove_left;
+	remove_left_last_preset = p_preset;
 }
-CaretWordBehavior::Preset CaretWordBehavior::get_remove_left_preset() const {
+CaretWordBehavior::Preset CaretWordBehavior::get_remove_left_preset() {
+	// Check if is expected preset.
+	if (remove_left_last_preset != PRESET_CUSTOM && behavior.remove_left == _get_preset(remove_left_last_preset).remove_left) {
+		return remove_left_last_preset;
+	}
+	// Find matching preset.
 	for (int i = 0; i < PRESET_CUSTOM; i++) {
 		Preset preset = (Preset)i;
 		if (behavior.remove_left == _get_preset(preset).remove_left) {
+			remove_left_last_preset = preset;
 			return preset;
 		}
 	}
+	// No preset found, must be custom.
 	return PRESET_CUSTOM;
 }
 void CaretWordBehavior::set_remove_right_preset(Preset p_preset) {
 	behavior.remove_right = _get_preset(p_preset).remove_right;
+	remove_right_last_preset = p_preset;
 }
-CaretWordBehavior::Preset CaretWordBehavior::get_remove_right_preset() const {
+CaretWordBehavior::Preset CaretWordBehavior::get_remove_right_preset() {
+	// Check if is expected preset.
+	if (remove_right_last_preset != PRESET_CUSTOM && behavior.remove_right == _get_preset(remove_right_last_preset).remove_right) {
+		return remove_right_last_preset;
+	}
+	// Find matching preset.
 	for (int i = 0; i < PRESET_CUSTOM; i++) {
 		Preset preset = (Preset)i;
 		if (behavior.remove_right == _get_preset(preset).remove_right) {
+			remove_right_last_preset = preset;
 			return preset;
 		}
 	}
+	// No preset found, must be custom.
 	return PRESET_CUSTOM;
 }
 
